@@ -1,0 +1,7 @@
+# List of files
+list_files: "ref_files/list_files.txt"
+
+# Number of threads
+num_threads: 28
+
+# Any other parameters
