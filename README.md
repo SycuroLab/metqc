@@ -1,10 +1,10 @@
-# metasta
+# metqc
 
-Bioinformatics pipeline for analyzing metagenomic data
+Bioinformatics pipeline for performing QC on metagenomic data.
 
 ## Overview
 
-Brief description here. 
+This is a robust, extensible, pipeline written in snakemake. 
 
 ## Installation
 
