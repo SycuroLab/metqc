@@ -1,6 +1,6 @@
 # metqc
 
-Bioinformatics pipeline for performing QC on metagenomic data.
+Bioinformatics pipeline for performing QC on metagenomic data. This pipeline was developed by Alana Schick for the lab of Dr. Laura Sycuro at the University of Calgary.
 
 ## Overview
 
@@ -11,7 +11,7 @@ This is a robust, extensible, pipeline written in snakemake.
 To use this pipeline, clone this repository into your project directory using the following command:
 
 ```
-git clone https://github.com/alanaschick/metasta.git projectname
+git clone https://github.com/alanaschick/metqc.git projectname
 ```
 
 Note: you need to have snakemake installed in order to run this. To install snakemake using conda, run the following line:
@@ -24,15 +24,13 @@ See the snakemake [webpage](https://bitbucket.org/johanneskoester/snakemake/wiki
 
 ## Config file
 
-The pipeline requires a config file, written in yaml, to run. See the provided example file. Most options are self-explanatory and simple to setup. Store these custom parameters in `config.yaml`.
+The pipeline requires a config file, written in yaml, to run. See the provided example file. This is the only file that should be modified before running the pipeline. Enter any custom parameters in `config.yaml`.
 
 ## Raw data and list of files.
 
-Ensure that all data files are in a folder called `projectname/data/rawdata/`. 
+Ensure that all data files are in a folder called `projectname/data/rawdata/`. You also need to have a list of sample names called `ref_files/list_files.txt` which contains the names of the samples to run the pipeline on, one sample per line. Sample names should include everything up to the R1/R2 part of the file names of the raw fastq files.
 
 ## Running the pipeline
-
-In order to run the pipeline, need to have a list of sample names called `list_files.txt` which contains the names of the samples to include in the analysis, one sample per line. Sample names should include everything up to the R1/R2 part of the file names of the fastq files.
 
 Test the pipeline by running `snakemake -np`. This command prints out the commands to be run without actually running them. 
 
