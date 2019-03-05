@@ -4,7 +4,7 @@ Bioinformatics pipeline for performing QC on metagenomic data. This pipeline was
 
 ## Overview
 
-This is a robust, extensible, pipeline written in snakemake. 
+This is a robust, extensible, pipeline written in snakemake. The pipeline takes as input raw fastq, paired-end read files and outputs filtered and cleaned files, ready to use for further analysis. The pipeline also outputs html reports of various QC steps. 
 
 ## Installation
 
@@ -46,7 +46,7 @@ All output files will be placed in the `results` directory and logs of each step
 
 ## Pipeline summary
 
-### Preprocessing
+### Steps
 
 1) QC raw reads using fastqc and multiqc. This step generates an html file called `multiqc_report_raw.html`.
 
@@ -59,6 +59,8 @@ All output files will be placed in the `results` directory and logs of each step
 5) Remove human reads using BMtagger. 
 
 6) BBMap.
+
+
 
 Notes:
 
