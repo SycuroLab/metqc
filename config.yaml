@@ -2,7 +2,7 @@
 list_files: "ref_files/list_files.txt"
 
 # Path to raw sequences
-path: "data/rawdata/"
+path: data/rawdata/
 
 # Number of threads
 num_threads: 28
