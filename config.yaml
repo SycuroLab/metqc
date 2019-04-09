@@ -1,8 +1,15 @@
+# **********************************
+# * Parameters for metqc pipeline *
+# **********************************
+
 # List of files
 list_files: "ref_files/list_files.txt"
 
 # Path to raw sequences
-path: data/rawdata/
+path: "data/rawdata/"
+
+# Path to human genome reference files
+path_hg: "ref_files/hg19/"
 
 # Number of threads
 num_threads: 28
