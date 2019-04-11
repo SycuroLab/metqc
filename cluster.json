@@ -14,5 +14,17 @@
   {
     "time" : "40:00",
     "walllim" : "80:00"
+  },
+
+  "bmtagger" :
+  {
+    "time" : "10:00",
+    "walllim" : "20:00"
+  },
+
+  "bbmap" :
+  {
+    "time" : "10:00",
+    "walllim": "20:00"
   }
 }
