@@ -127,4 +127,4 @@ rule bbmap:
         pre = "{sample}"
     conda: "envs/bbmap_env.yaml"
     shell:
-        "bbmap.sh in={params.i} outu={params.u} outm={params.m} ref={config[bbmap_ref]} nodisk scafstats=bbmap/stats/{params.pre}_scafstats.txt statsfile=bbmap/stats/{params.pre}_statsfile.txt"
+        "bbmap.sh in={params.i} outu={params.u} outm={params.m} ref={config[bbmap_ref]} nodisk scafstats=results/bbmap/stats/{params.pre}_scafstats.txt statsfile=results/bbmap/stats/{params.pre}_statsfile.txt"
