@@ -32,7 +32,7 @@ The pipeline requires a config file, written in yaml, to run. See the provided e
 
 ## Raw data and list of files.
 
-Ensure that all data files are in a folder called `projectname/data/rawdata/`. You also need to have a list of sample names called `ref_files/list_files.txt` which contains the names of the samples to run the pipeline on, one sample per line. Sample names should include everything up to the R1/R2 part of the file names of the raw fastq files.
+Specify the location of your raw data files in the config file. You also need to have a list of sample names which contains the names of the samples to run the pipeline on, one sample per line. Sample names should include everything up to the R1/R2 (or 1/2) part of the file names of the raw fastq files. See `metqc_files/list_files.txt` as an example. Specify the name of your list in the config file.
 
 ## Running the pipeline on Synergy
 
@@ -41,13 +41,13 @@ Test the pipeline by running `snakemake -np`. This command prints out the comman
 To run the pipeline on the synergy compute cluster, enter the following command from the project directory:
 
 ```
-snakemake --cluster-config cluster.json --cluster 'bsub -n {cluster.n} -R {cluster.resources} -W {cluster.walllim} -We {cluster.time} -M {cluster.maxmem} -oo {cluster.output} -e {cluster.error}' --jobs 500 --use-conda
+snakemake --cluster-config cluster.json --cluster 'bsub -n {cluster.n} -R {cluster.resources} -W {cluster.walllim} -We {cluster.time} -M {cluster.maxmem} -oo {cluster.output} -e {cluster.error}' --jobs 100 --use-conda
 ```
 Note: the file `cluster.json` contains the parameters for the LSF job submission system that Synergy uses. They are by default the same for each process but can be modified in this file.
 
 ## Results and log files
 
-All output files will be placed in the `results` directory and logs of each step of the pipeline will be written to the `logs` directory.
+Snakemake will create a directory for the results of the pipeline as well as a directory for log files. Logs of each step of the pipeline will be written to the `logs` directory.
 
 ## Pipeline summary
 
@@ -63,12 +63,6 @@ All output files will be placed in the `results` directory and logs of each step
 
 5) Remove human reads using BMtagger. Default reference for human reads is hg19 set inclusive of mitochondrial DNA from Naccache SN, Genome Research, 2014.
 
-6) BBMap.
-
-
-
-Notes:
- 
-QC step 4: Map reads to human reference genome and remove reads showing strong paired alignment (this gets the little bit of residual that makes it through). I currently can’t find the unadulterated reference sequence, but I’ll keep looking! Once found, we would want to make a BBMap index file. I like BBMap as a short read aligner. It will spit out some useful data files and a new readset comprised of those that do or do not meet the mapping threshold.
+6) Map reads to human reference genome using BBMap. This step generates two fastq files for each sample: one of reads that mapped to the human genome and one reads that did not map to the human genome.
 
 
