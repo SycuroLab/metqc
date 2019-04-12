@@ -8,14 +8,20 @@ list_files: "/home/aschick/projects/hmptest/list_files.txt"
 # Path to raw sequences
 path: "/home/aschick/projects/hmptest/data/rawdata/"
 
+# Adapters for cutadapt
+fwd_adapter: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
+rev_adapter: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
+
+# Index for bmfilter (part of bmtagger), bitmask file
+bmfilter_ref: "/home/aschick/refs/hg19/hg19_rRNA_mito_Hsapiens_rna_reference.bitmask"
+
+# Index for srprism (part of bmtagger)
+srprism_ref: "/home/aschick/refs/hg19/hg19_rRNA_mito_Hsapiens_rna_reference.srprism"
+
 # Path and name of reference fasta for bbmap
-bbmap_ref: "/home/aschick/projects/test_metqc/ref_files/hs37/hs37.fa"
+bbmap_ref: "/home/aschick/refs/hs37.fa"
 
 # Number of threads
 num_threads: 28
-
-# Adapters
-fwd_adapter: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
-rev_adapter: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
 
 # Any other parameters
