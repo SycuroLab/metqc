@@ -3,16 +3,13 @@
 # **********************************
 
 # List of files
-list_files: "ref_files/list_files.txt"
+list_files: "/home/aschick/projects/hmptest/list_files.txt"
 
 # Path to raw sequences
-path: "data/rawdata/"
+path: "/home/aschick/projects/hmptest/data/rawdata/"
 
-# Path to human genome reference files for bmtagger
-path_hg: "ref_files/hg19/"
-
-# Path and name of reference fasta for bbmap_env
-bbmap_ref: "ref_files/hs37/hs37.fa"
+# Path and name of reference fasta for bbmap
+bbmap_ref: "/home/aschick/projects/test_metqc/ref_files/hs37/hs37.fa"
 
 # Number of threads
 num_threads: 28
