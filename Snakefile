@@ -10,6 +10,9 @@ import pandas as pd
 SAMPLES = pd.read_csv(config["list_files"], header = None)
 SAMPLES = SAMPLES[0].tolist()
 
+import subprocess
+from os.path import join
+
 # **** Rules ****
 
 rule all:
@@ -21,8 +24,8 @@ rule all:
 
 rule fastqc_raw:
     input:
-        r1 = "data/rawdata/{sample}_1.fastq.gz",
-        r2 = "data/rawdata/{sample}_2.fastq.gz"
+        r1 = join(config["path"], "{sample}_1.fastq.gz"),
+        r2 = join(config["path"], "{sample}_2.fastq.gz")
     output:
         r1 = "data/rawdata/fastqc/{sample}_1_fastqc.html",
         r2 = "data/rawdata/fastqc/{sample}_2_fastqc.html"
@@ -39,8 +42,8 @@ rule multiqc_raw:
 
 rule cutadapt:
     input:
-        r1 = "data/rawdata/{sample}_1.fastq.gz",
-        r2 = "data/rawdata/{sample}_2.fastq.gz"
+        r1 = join(config["path"], "{sample}_1.fastq.gz"),
+        r2 = join(config["path"], "{sample}_2.fastq.gz")
     output:
         r1 = "data/trimdata/{sample}_r1_trim.fastq.gz",
         r2 = "data/trimdata/{sample}_r2_trim.fastq.gz"
@@ -97,23 +100,31 @@ rule bmtagger:
     input:
         r1 = "data/filtdata/{sample}_filtered_1.fastq",
         r2 = "data/filtdata/{sample}_filtered_2.fastq"
-    output: "data/bmtagger/{sample}_nohuman"
+    output:
+        r1 = "data/bmtagger/{sample}_nohuman_1.fastq",
+        r2 = "data/bmtagger/{sample}_nohuman_2.fastq"
+    params:
+        n = "data/bmtagger/{sample}_nohuman"
     conda: "envs/bmtagger_env.yaml"
     shell:
         "bmtagger.sh -b ref_files/hg19/hg19_rRNA_mito_Hsapiens_rna_reference.bitmask "
         "-x ref_files/hg19/hg19_rRNA_mito_Hsapiens_rna_reference.srprism -q 1 -1 {input.r1} "
-        "-2 {input.r2} -o {output} -X"
+        "-2 {input.r2} -o {params.n} -X"
 
 rule bbmap:
-    input: "data/bmtagger/{sample}_nohuman"
+    input:
+        r1 = "data/bmtagger/{sample}_nohuman_1.fastq",
+        r2 = "data/bmtagger/{sample}_nohuman_2.fastq"
     output:
         ur1 = "data/bbmap/{sample}_unmapped_1.fastq",
         ur2 = "data/bbmap/{sample}_unmapped_2.fastq",
         mr1 = "data/bbmap/{sample}_mapped_1.fastq",
         mr2 = "data/bbmap/{sample}_mapped_2.fastq"
     params:
+        i = "data/bmtagger/{sample}_nohuman_#.fastq",
         u = "data/bbmap/{sample}_unmapped_#.fastq",
-        m = "data/bbmap/{sample}_mapped_#.fastq"
+        m = "data/bbmap/{sample}_mapped_#.fastq",
+        pre = "{sample}"
     conda: "envs/bbmap_env.yaml"
     shell:
-        "bbmap.sh in={input}_#.fastq outu={params.u} outm={params.m} ref={config[bbmap_ref]} nodisk bhist=results/bbmap_bhist.txt scafstats=results/bbmap_scafstats.txt"
+        "bbmap.sh in={params.i} outu={params.u} outm={params.m} ref={config[bbmap_ref]} nodisk scafstats=bbmap/stats/{params.pre}_scafstats.txt statsfile=bbmap/stats/{params.pre}_statsfile.txt"
