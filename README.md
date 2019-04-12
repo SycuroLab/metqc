@@ -15,7 +15,7 @@ Output: filtered and cleaned fastq files, ready to use for further downstream an
 To use this pipeline, clone this repository into your project directory using the following command:
 
 ```
-git clone https://github.com/alanaschick/metqc.git projectname
+git clone https://github.com/alanaschick/metqc.git metqc
 ```
 
 Note: you need to have snakemake installed in order to run this. To install snakemake using conda, run the following line:
