@@ -125,7 +125,9 @@ rule bbmap:
 rule multiqc_all:
     input:
         r1 = expand("data/bbmap/{sample}_unmapped_1.fastq", sample=SAMPLES),
-        r2 = expand("data/bbmap/{sample}_unmapped_2.fastq", sample=SAMPLES)
-    output: "results/multiqc_report.html"
+        r2 = expand("data/bbmap/{sample}_unmapped_2.fastq", sample=SAMPLES),
+        r3 = expand("data/filtdata/fastqc/{sample}_filtered_1_fastqc.html", sample=SAMPLES),
+        r4 = expand("data/filtdata/fastqc/{sample}_filtered_2_fastqc.html", sample=SAMPLES)
+    output: "results/multiqc_report_all.html"
     conda: "metqc_files/envs/multiqc_env.yaml"
-    shell: "multiqc . -f -o results -n multiqc_report_all.html -x data/fastqc_raw/"        
+    shell: "multiqc . -f -o results -n multiqc_report_all.html -x data/fastqc_raw/"
