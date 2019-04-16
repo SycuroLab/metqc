@@ -6,6 +6,8 @@
 
 configfile: "config.yaml"
 
+# **** Imports ****
+
 import pandas as pd
 SAMPLES = pd.read_csv(config["list_files"], header = None)
 SAMPLES = SAMPLES[0].tolist()
@@ -20,7 +22,7 @@ rule all:
         expand("data/bbmap/{sample}_unmapped_1.fastq", sample=SAMPLES),
         expand("data/bbmap/{sample}_unmapped_2.fastq", sample=SAMPLES),
         "results/multiqc_report_raw.html",
-        "results/multiqc_report_filtered.html"
+        "results/multiqc_report_all.html"
 
 rule fastqc_raw:
     input:
@@ -55,18 +57,18 @@ rule cutadapt:
 
 rule decompress:
     input:
-        r1 = "data/trimdata/{sample}_r1_trim.fastq.gz",
-        r2 = "data/trimdata/{sample}_r2_trim.fastq.gz"
+        r1 = "data/trimdata/{sample}_r1_trim.fastq.gz" if config["run_cutadapt"] else join(config["path"], "{sample}_1.fastq.gz"),
+        r2 = "data/trimdata/{sample}_r2_trim.fastq.gz" if config["run_cutadapt"] else join(config["path"], "{sample}_2.fastq.gz")
     output:
-        r1 = "data/trimdata/{sample}_r1_trim.fastq",
-        r2 = "data/trimdata/{sample}_r2_trim.fastq"
+        r1 = "data/trimdata/{sample}_r1_trim.fastq" if config["run_cutadapt"] else join(config["path"], "{sample}_1.fastq"),
+        r2 = "data/trimdata/{sample}_r2_trim.fastq" if config["run_cutadapt"] else join(config["path"], "{sample}_2.fastq")
     shell:
             "gunzip -c {input.r1} > {output.r1}; gunzip -c {input.r2} > {output.r2}"
 
 rule prinseq:
     input:
-        r1 = "data/trimdata/{sample}_r1_trim.fastq",
-        r2 = "data/trimdata/{sample}_r2_trim.fastq"
+        r1 = "data/trimdata/{sample}_r1_trim.fastq" if config["run_cutadapt"] else join(config["path"], "{sample}_1.fastq"),
+        r2 = "data/trimdata/{sample}_r2_trim.fastq" if config["run_cutadapt"] else join(config["path"], "{sample}_2.fastq")
     params:
         prefix = "data/filtdata/{sample}_filtered"
     output:
@@ -87,14 +89,6 @@ rule fastqc_filt:
         r2 = "data/filtdata/fastqc/{sample}_filtered_2_fastqc.html"
     conda: "metqc_files/envs/fastqc_env.yaml"
     shell: "fastqc -o data/filtdata/fastqc {input.r1} {input.r2}"
-
-rule multiqc_filt:
-    input:
-        r1 = expand("data/filtdata/fastqc/{sample}_filtered_1_fastqc.html", sample=SAMPLES),
-        r2 = expand("data/filtdata/fastqc/{sample}_filtered_2_fastqc.html", sample=SAMPLES)
-    output: "results/multiqc_report_filtered.html"
-    conda: "metqc_files/envs/multiqc_env.yaml"
-    shell: "multiqc -f data/filtdata/fastqc -o results -n multiqc_report_filtered.html"
 
 rule bmtagger:
     input:
@@ -127,3 +121,11 @@ rule bbmap:
     conda: "metqc_files/envs/bbmap_env.yaml"
     shell:
         "bbmap.sh in={params.i} outu={params.u} outm={params.m} ref={config[bbmap_ref]} nodisk scafstats=results/bbmap_stats/{params.pre}_scafstats.txt statsfile=results/bbmap_stats/{params.pre}_statsfile.txt"
+
+rule multiqc_all:
+    input:
+        r1 = expand("data/bbmap/{sample}_unmapped_1.fastq", sample=SAMPLES),
+        r2 = expand("data/bbmap/{sample}_unmapped_2.fastq", sample=SAMPLES)
+    output: "results/multiqc_report.html"
+    conda: "metqc_files/envs/multiqc_env.yaml"
+    shell: "multiqc . -f -o results -n multiqc_report_all.html -x data/fastqc_raw/"        
