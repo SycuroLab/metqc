@@ -8,6 +8,9 @@ list_files: "/home/aschick/projects/hmptest/list_files.txt"
 # Path to raw sequences
 path: "/home/aschick/projects/hmptest/data/rawdata/"
 
+# Choose whether to run cutadapt
+run_cutadapt: TRUE
+
 # Adapters for cutadapt
 fwd_adapter: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
 rev_adapter: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
