@@ -51,7 +51,7 @@ rule cutadapt:
         r2 = "data/trimdata/{sample}_r2_trim.fastq.gz"
     conda: "metqc_files/envs/cutadapt_env.yaml"
     shell:
-            "cutadapt -m 60 -a {config[fwd_adapter]} "
+            "cutadapt -q {config[q5end]},{config[q3end]} -m 60 -a {config[fwd_adapter]} "
             "-A {config[rev_adapter]} -o {output.r1} -p {output.r2} "
             "{input.r1} {input.r2}"
 
@@ -130,4 +130,4 @@ rule multiqc_all:
         r4 = expand("data/filtdata/fastqc/{sample}_filtered_2_fastqc.html", sample=SAMPLES)
     output: "results/multiqc_report_all.html"
     conda: "metqc_files/envs/multiqc_env.yaml"
-    shell: "multiqc . -f -o results -n multiqc_report_all.html -x data/fastqc_raw/"
+    shell: "multiqc -f data/ logs/ results/bbmap_stats/ -o results -n multiqc_report_all.html -x data/fastqc_raw/"
