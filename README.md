@@ -50,7 +50,7 @@ ls | grep R1_001.fastq.gz | sed 's/_R1_001.fastq.gz//' > list_files.txt
 | rev_adapter | Reverse adapter sequence (5' adapter) |
 | q5end | Quality threshold to trim off the 5' end, using the same algorithm implemented by BWA |
 | q3end | Quality threshold to trim off the 3' end, set to 0 to perform no quality trimming |
-| bmfilter_ref | Index for bmfilter (part of bmtagger), should be a bitmask file, see [link](ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/README.bmtagger.txt) for more info) |
+| bmfilter_ref | Index for bmfilter (part of bmtagger), should be a bitmask file, see [link](ftp://ftp.ncbi.nlm.nih.gov/pub/agarwala/bmtagger/README.bmtagger.txt) for more info |
 | srprism_ref | Index for srprism (part of bmtagger), should be a prefix ending in srprism, see above link for more info |
 | bbmap_ref | Name of reference fasta for bbmap to align reads |
 | num_threads | Number of threads to use, should never be more than 56 on Synergy |
