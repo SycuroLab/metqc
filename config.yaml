@@ -17,7 +17,7 @@ rev_adapter: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATC
 
 # Quality trimming
 q5end: 0
-q3end: 0 
+q3end: 0
 
 # Index for bmfilter (part of bmtagger), bitmask file
 bmfilter_ref: "/home/aschick/refs/hg19/hg19_rRNA_mito_Hsapiens_rna_reference.bitmask"
@@ -30,5 +30,3 @@ bbmap_ref: "/home/aschick/refs/hs37.fa"
 
 # Number of threads
 num_threads: 28
-
-# Any other parameters
