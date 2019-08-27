@@ -23,10 +23,10 @@ Note: you need to have **conda** and **snakemake** installed in order to run thi
 To install snakemake using conda, run the following line:
 
 ```
-conda install -c bioconda snakemake
+conda install -c bioconda -c conda-forge snakemake
 ```
 
-See the snakemake [webpage](https://bitbucket.org/johanneskoester/snakemake/wiki/Home) for further details.
+See the snakemake installation [webpage](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for further details.
 
 ## Config file
 
