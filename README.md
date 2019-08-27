@@ -72,7 +72,7 @@ Snakemake will create a directory for the results of the pipeline as well as a d
 
 ## Pipeline summary
 
-![alt text](https://raw.githubusercontent.com/SycuroLab/metqc/metqc_files/metqc_dag.png)
+![Rulegraph](./metqc_files/metqc_dag.png)
 
 ### Steps
 
