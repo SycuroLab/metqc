@@ -72,6 +72,8 @@ Snakemake will create a directory for the results of the pipeline as well as a d
 
 ## Pipeline summary
 
+Below is an example workflow for two samples: ERR2619708s and ERR2619707s.
+
 ![Rulegraph](./metqc_files/metqc_dag.png)
 
 ### Steps
