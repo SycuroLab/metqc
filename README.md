@@ -15,7 +15,7 @@ Output: filtered and cleaned fastq files, ready to use for downstream analysis. 
 To use this pipeline, navigate to your project directory and clone this repository into that directory using the following command:
 
 ```
-git clone https://github.com/alanaschick/metqc.git metqc
+git clone https://github.com/SycuroLab/metqc.git metqc
 ```
 
 Note: you need to have **conda** and **snakemake** installed in order to run this. To install conda, see the instructions [here](https://github.com/ucvm/synergy/wiki). 
@@ -26,7 +26,7 @@ To install snakemake using conda, run the following line:
 conda install -c bioconda -c conda-forge snakemake
 ```
 
-See the snakemake installation [webpage](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for further details.
+See the snakemake installation [instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for further details.
 
 ## Config file
 
@@ -72,7 +72,7 @@ Snakemake will create a directory for the results of the pipeline as well as a d
 
 ## Pipeline summary
 
-Below is an example workflow for two samples: ERR2619708s and ERR2619707s.
+Example workflow for two samples: ERR2619708s and ERR2619707s.
 
 ![Rulegraph](./metqc_files/metqc_dag.png)
 
