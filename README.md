@@ -72,6 +72,8 @@ Snakemake will create a directory for the results of the pipeline as well as a d
 
 ## Pipeline summary
 
+![alt text](https://raw.githubusercontent.com/SycuroLab/metqc/metqc_files/metqc_dag.pdf)
+
 ### Steps
 
 1) QC raw reads using fastqc and multiqc. This step generates an html file called `multiqc_report_raw.html` in the `results` directory.
