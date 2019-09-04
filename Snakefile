@@ -120,7 +120,7 @@ rule bbmap:
         pre = "{sample}"
     conda: "metqc_files/envs/bbmap_env.yaml"
     shell:
-        "bbmap.sh in={params.i} outu={params.u} outm={params.m} ref={config[bbmap_ref]} nodisk scafstats=results/bbmap_stats/{params.pre}_scafstats.txt ihist=results/bbmap_stats/{params.pre}_ihist.txt file=results/bbmap_stats/{params.pre}_statsfile.txt"
+        "bbmap.sh in={params.i} outu={params.u} outm={params.m} ref={config[bbmap_ref]} nodisk scafstats=results/bbmap_stats/{params.pre}_scafstats.txt ihist=results/bbmap_stats/{params.pre}_ihist.txt statsfile=results/bbmap_stats/{params.pre}_statsfile.txt"
 
 rule multiqc_all:
     input:
