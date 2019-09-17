@@ -28,6 +28,9 @@ bmfilter_ref: "/home/aschick/refs/hg19/hg19_rRNA_mito_Hsapiens_rna_reference.bit
 # Index for srprism (part of bmtagger)
 srprism_ref: "/home/aschick/refs/hg19/hg19_rRNA_mito_Hsapiens_rna_reference.srprism"
 
+# Choose whether to run bbmap
+run_bbmap: FALSE
+
 # Path and name of reference fasta for bbmap
 bbmap_ref: "/home/aschick/refs/hs37.fa"
 
