@@ -51,7 +51,7 @@ ls | grep R1_001.fastq.gz | sed 's/_R1_001.fastq.gz//' > list_files.txt
 ## Description of other parameters
 | Parameter | Description |
 | -------------- | --------------- |
-| run_cutadapt | Whether or not run cutadapt, which removes adapters and performs quality trimming |
+| run_cutadapt | Whether or not run cutadapt, which removes adapters |
 | fwd_adapter | Forward adapter sequence (3' adapter) |
 | rev_adapter | Reverse adapter sequence (5' adapter) |
 | maxn | Maximum number of N bases allowed, reads with more will be discarded |
@@ -59,6 +59,7 @@ ls | grep R1_001.fastq.gz | sed 's/_R1_001.fastq.gz//' > list_files.txt
 | trimright | Trim sequence by quality score from the 3'-end with this threshold score |
 | bmfilter_ref | Index for bmfilter (part of bmtagger), should be a bitmask file, see [link](https://www.westgrid.ca/support/software/bmtagger) for more info |
 | srprism_ref | Index for srprism (part of bmtagger), should be a reference.srprism prefix, see above link for more info |
+| run_bbmap | Whether or not to run bbmap, default is FALSE |
 | bbmap_ref | Name of reference fasta for bbmap to align reads |
 | num_threads | Number of threads to use, should never be more than 56 on Synergy |
 
@@ -89,7 +90,7 @@ Snakemake will create a directory for the results of the pipeline as well as a d
 
 5) Remove human reads using BMtagger. Specify location of reference files to be used in config file (need to specify a .bitmask file and a .srprism prefix, see config file for example). This step outputs sequence files of non human reads only to a directory called `data/bmtagger/` with the suffix 'nohuman'. 
 
-6) Map reads to human reference genome using BBMap. Specify location of reference file in config file (need to specify a fasta file). This step generates two fastq files for each sample: one of reads that mapped to the human genome and one reads that did not map to the human genome. Files are output to a directory called `data/bbmap/` with the suffix 'mapped' and 'unmapped'. 
+6) Map reads to human reference genome using BBMap. This step is optional. Specify location of reference file in config file (need to specify a fasta file). This step generates two fastq files for each sample: one of reads that mapped to the human genome and one reads that did not map to the human genome. Files are output to a directory called `data/bbmap/` with the suffix 'mapped' and 'unmapped'. 
 
 7) Final QC step on all files using multiqc. This step generates an html file called `multiqc_report_all.html` in the `results` directory. 
 
