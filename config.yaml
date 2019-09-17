@@ -15,9 +15,12 @@ run_cutadapt: TRUE
 fwd_adapter: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
 rev_adapter: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
 
-# Quality trimming for cutadapt
-q5end: 0
-q3end: 0
+# Maximum number of N bases allowed
+maxn: 0
+
+# Quality trimming for prinseq
+trimleft: 10
+trimright: 10
 
 # Index for bmfilter (part of bmtagger), bitmask file
 bmfilter_ref: "/home/aschick/refs/hg19/hg19_rRNA_mito_Hsapiens_rna_reference.bitmask"
