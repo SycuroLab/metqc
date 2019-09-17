@@ -10,6 +10,12 @@ Input: raw paired-end fastq files.
 
 Output: filtered and cleaned fastq files, ready to use for downstream analysis. The pipeline also produces html reports and stats of various QC steps. 
 
+## Pipeline Summary
+
+Example workflow for two samples: ERR2619708s and ERR2619707s
+
+![Rulegraph](./metqc_files/metqc_dag.png)
+
 ## Installation
 
 To use this pipeline, navigate to your project directory and clone this repository into that directory using the following command:
@@ -48,8 +54,9 @@ ls | grep R1_001.fastq.gz | sed 's/_R1_001.fastq.gz//' > list_files.txt
 | run_cutadapt | Whether or not run cutadapt, which removes adapters and performs quality trimming |
 | fwd_adapter | Forward adapter sequence (3' adapter) |
 | rev_adapter | Reverse adapter sequence (5' adapter) |
-| q5end | Quality threshold to trim off the 5' end, using the same algorithm implemented by BWA |
-| q3end | Quality threshold to trim off the 3' end, set to 0 to perform no quality trimming |
+| maxn | Maximum number of N bases allowed, reads with more will be discarded |
+| trimleft | Trim sequence by quality score from the 5'-end with this threshold score |
+| trimright | Trim sequence by quality score from the 3'-end with this threshold score |
 | bmfilter_ref | Index for bmfilter (part of bmtagger), should be a bitmask file, see [link](https://www.westgrid.ca/support/software/bmtagger) for more info |
 | srprism_ref | Index for srprism (part of bmtagger), should be a reference.srprism prefix, see above link for more info |
 | bbmap_ref | Name of reference fasta for bbmap to align reads |
@@ -70,19 +77,13 @@ The above command submits jobs to Synergy, one for each sample and step of the Q
 
 Snakemake will create a directory for the results of the pipeline as well as a directory for log files. Log files of each step of the pipeline will be written to the `logs` directory.
 
-## Pipeline summary
-
-Example workflow for two samples: ERR2619708s and ERR2619707s
-
-![Rulegraph](./metqc_files/metqc_dag.png)
-
 ### Steps
 
 1) QC raw reads using fastqc and multiqc. This step generates an html file called `multiqc_report_raw.html` in the `results` directory.
 
-2) Quality filtering and adapter trimming using cutadapt. This step is optional; to disable the pipeline from running cutadapt, set the parameter `run_cutadapt = FALSE` in the config file. If using cutadapt, specify the quality cutoff and adapter sequences to be trimmed in the config file. This step outputs trimmed sequence files to a directory called `data/trimdata/` and adds the suffix 'trim' to file names.
+2) Adapter trimming using cutadapt. This step is optional; to disable the pipeline from running cutadapt, set the parameter `run_cutadapt = FALSE` in the config file. If using cutadapt, specify the adapter sequences to be trimmed in the config file. This step outputs trimmed sequence files to a directory called `data/trimdata/` and adds the suffix 'trim' to file names.
 
-3) Dereplication and filtering of low complexity reads using PRINSEQ. This step outputs filtered sequence files to a directory called `data/filtdata/` and adds the suffix 'filtered' to file names.
+3) PRINSEQ - quality filtering, dereplication, and filtering of low complexity reads. This step outputs filtered sequence files to a directory called `data/filtdata/` and adds the suffix 'filtered' to file names.
 
 4) QC on filtered reads using fastqc.
 
