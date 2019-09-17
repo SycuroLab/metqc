@@ -51,7 +51,7 @@ rule cutadapt:
         r2 = "data/trimdata/{sample}_r2_trim.fastq.gz"
     conda: "metqc_files/envs/cutadapt_env.yaml"
     shell:
-            "cutadapt -q {config[q5end]},{config[q3end]} -m 60 -a {config[fwd_adapter]} "
+            "cutadapt -m 60 --max-n {config[maxn]} -a {config[fwd_adapter]} "
             "-A {config[rev_adapter]} -o {output.r1} -p {output.r2} "
             "{input.r1} {input.r2}"
 
@@ -77,6 +77,7 @@ rule prinseq:
     conda: "metqc_files/envs/prinseq_env.yaml"
     shell:
             "perl metqc_files/scripts/prinseq-lite.pl -fastq {input.r1} -fastq2 {input.r2} "
+            "-trim_qual_left {config[trimleft]} -trim_qual_right {config[trimright]} "
             "-out_good {params.prefix} -out_bad null -lc_method dust -lc_threshold 7 "
             "-derep 1"
 
