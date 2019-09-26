@@ -19,8 +19,8 @@ from os.path import join
 
 rule all:
     input:
-        expand("data/bmtagger/{sample}_nohuman_1.fastq", sample=SAMPLES),
-        expand("data/bmtagger/{sample}_nohuman_2.fastq", sample=SAMPLES),
+        expand("data/bmtagger/{sample}_bbmapped_1.fastq", sample=SAMPLES),
+        expand("data/bmtagger/{sample}_bbmapped_2.fastq", sample=SAMPLES),
         "results/multiqc_report_raw.html",
         "results/multiqc_report_all.html"
 
@@ -79,7 +79,9 @@ rule prinseq:
             "perl metqc_files/scripts/prinseq-lite.pl -fastq {input.r1} -fastq2 {input.r2} "
             "-trim_qual_left {config[trimleft]} -trim_qual_right {config[trimright]} "
             "-out_good {params.prefix} -out_bad null -lc_method dust -lc_threshold 7 "
-            "-derep 1"
+            "-derep 1 -trim_qual_type {config[trim_qual_type]} -trim_qual_window "
+            "{config[trim_qual_window]} -trim_qual_step {config[trim_qual_step]} "
+            "-trim_qual_rule {config[trim_qual_rule]}"
 
 rule fastqc_filt:
     input:
@@ -96,10 +98,10 @@ rule bmtagger:
         r1 = "data/filtdata/{sample}_filtered_1.fastq",
         r2 = "data/filtdata/{sample}_filtered_2.fastq"
     output:
-        r1 = "data/bmtagger/{sample}_nohuman_1.fastq",
-        r2 = "data/bmtagger/{sample}_nohuman_2.fastq"
+        r1 = "data/bmtagger/{sample}_bmtagged_1.fastq",
+        r2 = "data/bmtagger/{sample}_bmtagged_2.fastq"
     params:
-        n = "data/bmtagger/{sample}_nohuman"
+        n = "data/bmtagger/{sample}_bmtagged"
     conda: "metqc_files/envs/bmtagger_env.yaml"
     shell:
         "bmtagger.sh -b {config[bmfilter_ref]} -x {config[srprism_ref]} -q 1 -1 "
@@ -107,17 +109,17 @@ rule bmtagger:
 
 rule bbmap:
     input:
-        r1 = "data/bmtagger/{sample}_nohuman_1.fastq",
-        r2 = "data/bmtagger/{sample}_nohuman_2.fastq"
+        r1 = "data/filtdata/{sample}_filtered_1.fastq",
+        r2 = "data/filtdata/{sample}_filtered_2.fastq"
     output:
-        ur1 = "data/bbmap/{sample}_unmapped_1.fastq",
-        ur2 = "data/bbmap/{sample}_unmapped_2.fastq",
-        mr1 = "data/bbmap/{sample}_mapped_1.fastq",
-        mr2 = "data/bbmap/{sample}_mapped_2.fastq"
+        ur1 = "data/bbmap/{sample}_bbmapped_1.fastq",
+        ur2 = "data/bbmap/{sample}_bbmapped_2.fastq",
+        mr1 = "data/bbmap/{sample}_bbmapped_human_reads_1.fastq",
+        mr2 = "data/bbmap/{sample}_bbmapped_human_reads_2.fastq"
     params:
-        i = "data/bmtagger/{sample}_nohuman_#.fastq",
-        u = "data/bbmap/{sample}_unmapped_#.fastq",
-        m = "data/bbmap/{sample}_mapped_#.fastq",
+        i = "data/bmtagger/{sample}_filtered_#.fastq",
+        u = "data/bbmap/{sample}_bbmapped_#.fastq",
+        m = "data/bbmap/{sample}_bbmapped_human_reads_#.fastq",
         pre = "{sample}"
     conda: "metqc_files/envs/bbmap_env.yaml"
     shell:
@@ -125,10 +127,12 @@ rule bbmap:
 
 rule multiqc_all:
     input:
-        r1 = expand("data/bbmap/{sample}_unmapped_1.fastq", sample=SAMPLES) if config["run_bbmap"] else expand("data/bmtagger/{sample}_nohuman_1.fastq", sample=SAMPLES),
-        r2 = expand("data/bbmap/{sample}_unmapped_2.fastq", sample=SAMPLES) if config["run_bbmap"] else expand("data/bmtagger/{sample}_nohuman_2.fastq", sample=SAMPLES),
+        r1 = expand("data/bbmap/{sample}_bbmapped_1.fastq", sample=SAMPLES) if config["run_bbmap"] else ...,
+        r2 = expand("data/bbmap/{sample}_bbmapped_2.fastq", sample=SAMPLES) if config["run_bbmap"] else ...,
         r3 = expand("data/filtdata/fastqc/{sample}_filtered_1_fastqc.html", sample=SAMPLES),
-        r4 = expand("data/filtdata/fastqc/{sample}_filtered_2_fastqc.html", sample=SAMPLES)
+        r4 = expand("data/filtdata/fastqc/{sample}_filtered_2_fastqc.html", sample=SAMPLES),
+        r5 = expand("data/bmtagger/{sample}_bmtagged_1.fastq", sample=SAMPLES),
+        r6 = expand("data/bmtagger/{sample}_bmtagged_1.fastq", sample=SAMPLES)
     output: "results/multiqc_report_all.html"
     conda: "metqc_files/envs/multiqc_env.yaml"
-    shell: "multiqc -f data/ logs/ results/bbmap_stats/ -o results -n multiqc_report_all.html -x data/fastqc_raw/"
+    shell: "multiqc . -o results -n multiqc_report_all.html -x data/fastqc_raw/"

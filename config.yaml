@@ -16,11 +16,15 @@ fwd_adapter: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
 rev_adapter: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
 
 # Maximum number of N bases allowed
-maxn: 0
+maxn: 10
 
-# Quality trimming for prinseq
-trimleft: 10
-trimright: 10
+# prinseq parameters
+trimleft: 20
+trimright: 20
+trim_qual_window: 10
+trim_qual_step : 2
+trim_qual_type: "mean"
+trim_qual_rule: "gt"
 
 # Index for bmfilter (part of bmtagger), bitmask file
 bmfilter_ref: "/home/aschick/refs/hg19/hg19_rRNA_mito_Hsapiens_rna_reference.bitmask"
