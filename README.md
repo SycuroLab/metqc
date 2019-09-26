@@ -12,9 +12,9 @@ Output: filtered and cleaned fastq files, ready to use for downstream analysis. 
 
 ## Pipeline Summary
 
-Example workflow.
+Example workflow. Note that the `cutadapt` and `bbmap` steps are optional. See the description of parameters section for more information.
 
-<img src="metqc_files/metqc_rulegraph.png" width="400">
+<img src="metqc_files/metqc_rulegraph.png" width="450">
 
 ## Installation
 
