@@ -135,4 +135,4 @@ rule multiqc_all:
         r6 = expand("data/bmtagger/{sample}_bmtagged_1.fastq", sample=SAMPLES)
     output: "results/multiqc_report_all.html"
     conda: "metqc_files/envs/multiqc_env.yaml"
-    shell: "multiqc . -o results -n multiqc_report_all.html -x data/fastqc_raw/"
+    shell: "multiqc -f data/ -o results -n multiqc_report_all.html -x data/fastqc_raw/"
