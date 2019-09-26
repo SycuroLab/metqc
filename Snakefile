@@ -19,8 +19,8 @@ from os.path import join
 
 rule all:
     input:
-        expand("data/bbmap/{sample}_unmapped_1.fastq", sample=SAMPLES),
-        expand("data/bbmap/{sample}_unmapped_2.fastq", sample=SAMPLES),
+        expand("data/bmtagger/{sample}_nohuman_1.fastq", sample=SAMPLES),
+        expand("data/bmtagger/{sample}_nohuman_2.fastq", sample=SAMPLES),
         "results/multiqc_report_raw.html",
         "results/multiqc_report_all.html"
 
@@ -125,8 +125,8 @@ rule bbmap:
 
 rule multiqc_all:
     input:
-        r1 = expand("data/bbmap/{sample}_unmapped_1.fastq", sample=SAMPLES) if config["run_bbmap"] else expand("data/bmtagger/{sample}_nohuman_1.fastq"),
-        r2 = expand("data/bbmap/{sample}_unmapped_2.fastq", sample=SAMPLES) if config["run_bbmap"] else expand("data/bmtagger/{sample}_nohuman_2.fastq"),
+        r1 = expand("data/bbmap/{sample}_unmapped_1.fastq", sample=SAMPLES) if config["run_bbmap"] else expand("data/bmtagger/{sample}_nohuman_1.fastq", sample=SAMPLES),
+        r2 = expand("data/bbmap/{sample}_unmapped_2.fastq", sample=SAMPLES) if config["run_bbmap"] else expand("data/bmtagger/{sample}_nohuman_2.fastq", sample=SAMPLES),
         r3 = expand("data/filtdata/fastqc/{sample}_filtered_1_fastqc.html", sample=SAMPLES),
         r4 = expand("data/filtdata/fastqc/{sample}_filtered_2_fastqc.html", sample=SAMPLES)
     output: "results/multiqc_report_all.html"
