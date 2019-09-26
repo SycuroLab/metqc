@@ -14,7 +14,7 @@ Output: filtered and cleaned fastq files, ready to use for downstream analysis. 
 
 Example workflow.
 
-![Rulegraph](./metqc_files/metqc_rulegraph.png)
+![Rulegraph](./metqc_files/metqc_rulegraph.png | width = 48)
 
 ## Installation
 
