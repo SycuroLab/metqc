@@ -12,9 +12,9 @@ Output: filtered and cleaned fastq files, ready to use for downstream analysis. 
 
 ## Pipeline Summary
 
-Example workflow for two samples: ERR2619708s and ERR2619707s
+Example workflow.
 
-![Rulegraph](./metqc_files/metqc_dag.png)
+![Rulegraph](./metqc_files/metqc_rulegraph.png)
 
 ## Installation
 
