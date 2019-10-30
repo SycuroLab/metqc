@@ -16,6 +16,22 @@ Example workflow. Note that the `cutadapt` and `bbmap` steps are optional. See t
 
 <img src="metqc_files/metqc_rulegraph.png" width="450">
 
+## Steps
+
+1) QC raw reads using fastqc and multiqc. This step generates an html file called `multiqc_report_raw.html` in the `results` directory.
+
+2) Adapter trimming using cutadapt. This step is optional; to disable the pipeline from running cutadapt, set the parameter `run_cutadapt = FALSE` in the config file. If using cutadapt, specify the adapter sequences to be trimmed in the config file. This step outputs trimmed sequence files to a directory called `data/trimdata/` and adds the suffix 'trim' to file names.
+
+3) PRINSEQ - quality filtering, dereplication, and filtering of low complexity reads. This step outputs filtered sequence files to a directory called `data/filtdata/` and adds the suffix 'filtered' to file names.
+
+4) QC on filtered reads using fastqc.
+
+5) Remove human reads using BMtagger. Specify location of reference files to be used in config file (need to specify a .bitmask file and a .srprism prefix, see config file for example). This step outputs sequence files of non human reads only to a directory called `data/bmtagger/` with the suffix 'nohuman'. 
+
+6) Map reads to human reference genome using BBMap. This step is optional. Specify location of reference file in config file (need to specify a fasta file). This step generates two fastq files for each sample: one of reads that mapped to the human genome and one reads that did not map to the human genome. Files are output to a directory called `data/bbmap/` with the suffix 'mapped' and 'unmapped'. 
+
+7) Final QC step on all files using multiqc. This step generates an html file called `multiqc_report_all.html` in the `results` directory. 
+
 ## Installation
 
 To use this pipeline, navigate to your project directory and clone this repository into that directory using the following command:
@@ -81,21 +97,5 @@ The above command submits jobs to Synergy, one for each sample and step of the Q
 ## Results and log files
 
 Snakemake will create a directory for the results of the pipeline as well as a directory for log files. Log files of each step of the pipeline will be written to the `logs` directory.
-
-### Steps
-
-1) QC raw reads using fastqc and multiqc. This step generates an html file called `multiqc_report_raw.html` in the `results` directory.
-
-2) Adapter trimming using cutadapt. This step is optional; to disable the pipeline from running cutadapt, set the parameter `run_cutadapt = FALSE` in the config file. If using cutadapt, specify the adapter sequences to be trimmed in the config file. This step outputs trimmed sequence files to a directory called `data/trimdata/` and adds the suffix 'trim' to file names.
-
-3) PRINSEQ - quality filtering, dereplication, and filtering of low complexity reads. This step outputs filtered sequence files to a directory called `data/filtdata/` and adds the suffix 'filtered' to file names.
-
-4) QC on filtered reads using fastqc.
-
-5) Remove human reads using BMtagger. Specify location of reference files to be used in config file (need to specify a .bitmask file and a .srprism prefix, see config file for example). This step outputs sequence files of non human reads only to a directory called `data/bmtagger/` with the suffix 'nohuman'. 
-
-6) Map reads to human reference genome using BBMap. This step is optional. Specify location of reference file in config file (need to specify a fasta file). This step generates two fastq files for each sample: one of reads that mapped to the human genome and one reads that did not map to the human genome. Files are output to a directory called `data/bbmap/` with the suffix 'mapped' and 'unmapped'. 
-
-7) Final QC step on all files using multiqc. This step generates an html file called `multiqc_report_all.html` in the `results` directory. 
 
 
