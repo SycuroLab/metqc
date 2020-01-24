@@ -4,17 +4,20 @@ Bioinformatics pipeline for performing QC on shotgun metagenomic data.
 
 ## Overview
 
-This pipeline is written in snakemake and designed to automate and control the submission of processes to the Synergy server at the University of Calgary. Developed by Alana Schick for the lab of Dr. Laura Sycuro. 
+Input: 
 
-Input: raw paired-end fastq files.
+* Raw paired-end fastq files from shotgun metagenome sequencing. 
 
-Output: filtered and cleaned fastq files, ready to use for downstream analysis. The pipeline also produces html reports and stats of various QC steps. 
+Output:
+
+* Filtered and cleaned fastq files, ready to use for downstream analysis. 
+* An html report of various QC steps from multiqc. 
 
 ## Pipeline Summary
 
 Example workflow. Note that the `cutadapt` and `bbmap` steps are optional. See the description of parameters section for more information.
 
-<img src="metqc_files/metqc_rulegraph.png" width="450">
+<img src="utils/metqc_rulegraph.png" width="450">
 
 ## Steps
 
@@ -40,15 +43,7 @@ To use this pipeline, navigate to your project directory and clone this reposito
 git clone https://github.com/SycuroLab/metqc.git metqc
 ```
 
-Note: you need to have **conda** and **snakemake** installed in order to run this. To install conda, see the instructions [here](https://github.com/ucvm/synergy/wiki). 
-
-To install snakemake using conda, run the following line:
-
-```
-conda install -c bioconda -c conda-forge snakemake
-```
-
-See the snakemake installation [instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for further details.
+Note: you need to have **conda** and **snakemake** installed in order to run this. See instructions below. 
 
 ## Config file
 
@@ -97,5 +92,17 @@ The above command submits jobs to Synergy, one for each sample and step of the Q
 ## Results and log files
 
 Snakemake will create a directory for the results of the pipeline as well as a directory for log files. Log files of each step of the pipeline will be written to the `logs` directory.
+
+## Conda and Snakemake
+
+To install conda, see the instructions [here](https://github.com/ucvm/synergy/wiki). 
+
+To install snakemake using conda, run the following line:
+
+```
+conda install -c bioconda -c conda-forge snakemake
+```
+See the snakemake installation [instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for further details.
+
 
 
