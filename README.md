@@ -59,24 +59,26 @@ If there are many samples, it may be convenient to generate the list of files us
 ls | grep R1_001.fastq.gz | sed 's/_R1_001.fastq.gz//' > list_files.txt
 ```
 
-## Description of other parameters
-| Parameter | Description |
-| -------------- | --------------- |
-| run_cutadapt | Whether or not run cutadapt, which removes adapters (default = TRUE) |
-| fwd_adapter | Forward adapter sequence (3' adapter) |
-| rev_adapter | Reverse adapter sequence (5' adapter) |
-| maxn | Maximum number of N bases allowed, reads with more will be discarded (default = 10) |
-| trimleft | Trim sequence by quality score from the 5'-end with this threshold score (default = 20) |
-| trimright | Trim sequence by quality score from the 3'-end with this threshold score (default = 20) |
-| trim_qual_window | The sliding window size used to calculate quality score by type (default = 10) |
-| trim_qual_step | Step size used to move the sliding window (default = 2) | 
-| trim_qual_rule | Rule to use to compare quality score to calculated value. Allowed options are lt (less than), gt (greater than, default) and et (equal to) | 
-| trim_qual_type | Type of quality score calculation to use, allowed options are: min, mean (default), max, sum |
-| bmfilter_ref | Index for bmfilter (part of bmtagger), should be a bitmask file, see [link](https://www.westgrid.ca/support/software/bmtagger) for more info |
-| srprism_ref | Index for srprism (part of bmtagger), should be a reference.srprism prefix, see above link for more info |
-| run_bbmap | Whether or not to run bbmap (default = FALSE) |
-| bbmap_ref | Name of reference fasta for bbmap to align reads |
-| num_threads | Number of threads to use, should never be more than 56 on Synergy (default = 28) |
+## Description of parameters
+| Parameter | Description | Example/Default |
+| -------------- | --------------- | ------------ |
+| list_files | Full path and name of your sample list. | `"/home/aschick/project/list_files.txt"`
+| path | Location of input files. | `"/home/aschick/project/data/filtered/"`
+| run_cutadapt | Whether or not run cutadapt, which removes adapters | `TRUE` |
+| fwd_adapter | Forward adapter sequence (3' adapter) | `CTGTCTCTTAT...` |
+| rev_adapter | Reverse adapter sequence (5' adapter) | `CTGTCTCTTAT...` |
+| maxn | Maximum number of N bases allowed, reads with more will be discarded | `10` |
+| trimleft | Trim sequence by quality score from the 5'-end with this threshold score | `20` |
+| trimright | Trim sequence by quality score from the 3'-end with this threshold score | `20` |
+| trim_qual_window | The sliding window size used to calculate quality score by type | `10` |
+| trim_qual_step | Step size used to move the sliding window | `2` | 
+| trim_qual_rule | Rule to use to compare quality score to calculated value. Allowed options are lt (less than), gt (greater than, default) and et (equal to) | `"gt"` | 
+| trim_qual_type | Type of quality score calculation to use, allowed options are: min, mean (default), max, sum | `"mean"` |
+| bmfilter_ref | Index for bmfilter (part of bmtagger), should be a bitmask file, see [link](https://www.westgrid.ca/support/software/bmtagger) for more info | `"/home/refs/hg19/hg19_rRNA_reference.bitmask"` |
+| srprism_ref | Index for srprism (part of bmtagger), should be a reference.srprism prefix, see above link for more info | `"/home/refs/hg19/hg19_rRNA_reference.srprism"` |
+| run_bbmap | Whether or not to run bbmap | `FALSE` |
+| bbmap_ref | Name of reference fasta for bbmap to align reads | `"/home/refs.hs37.fa"` |
+| num_threads | Number of threads to use, should never be more than 56 on Synergy | `28` |
 
 ## Running the pipeline on Synergy
 
@@ -85,7 +87,7 @@ Test the pipeline by running `snakemake -np`. This command prints out the comman
 To run the pipeline on the Synergy compute cluster, enter the following command from the project directory:
 
 ```
-snakemake --cluster-config cluster.json --cluster 'bsub -n {cluster.n} -R {cluster.resources} -W {cluster.walllim} -We {cluster.time} -M {cluster.maxmem} -oo {cluster.output} -e {cluster.error}' --jobs 100 --use-conda
+snakemake --cluster-config cluster.json --cluster 'bsub -n {cluster.n} -R {cluster.resources} -W {cluster.walllim} -We {cluster.time} -M {cluster.maxmem} -oo {cluster.output} -e {cluster.error}' --jobs 500 --use-conda
 ```
 The above command submits jobs to Synergy, one for each sample and step of the QC pipeline. Note: the file `cluster.json` contains the parameters for the LSF job submission system that Synergy uses. In most cases, this file should not be modified.
 
