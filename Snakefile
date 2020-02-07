@@ -13,11 +13,12 @@ SAMPLES = pd.read_csv(config["list_files"], header = None)
 SAMPLES = SAMPLES[0].tolist()
 
 # **** Define logic ****
+qc = config["qc_only"]
 
-def all_input_reads:
+def all_input_reads(qc):
     if config["qc_only"]:
         return expand(config["path"]+"{sample}"+config["for"], sample=SAMPLES)
-    else:    
+    else:
         if config["run_bbmap"]:
             return expand("output/bbmap/{sample}_bbmapped_1.fastq", sample=SAMPLES)
         else:
@@ -31,7 +32,7 @@ def all_input_reads:
 rule all:
     input:
         "results/multiqc_report.html",
-        "" if config["qc_only"] else "results/multiqc_report_filtered.html",
+        "results/multiqc_report.html" if config["qc_only"] else "results/multiqc_report_filtered.html",
         all_input_reads
 
 rule fastqc:
