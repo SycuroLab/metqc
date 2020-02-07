@@ -78,8 +78,8 @@ ls | grep R1_001.fastq | sed 's/_R1_001.fastq//' > list_files.txt
 | -------------- | --------------- | ------------ |
 | list_files | Full path and name of your sample list. | `"/home/aschick/project/list_files.txt"` |
 | path | Location of input files. | `"/home/aschick/project/data/filtered/"` |
-| for | Suffix of forward reads. | `"_R1_001.fastq"` |
-| rev | Suffix of reverse reads. | `"_R2_001.fastq"` |
+| for | Suffix of forward reads. | `"_R1_001"` |
+| rev | Suffix of reverse reads. | `"_R2_001"` |
 | qc_only | Set to TRUE to only run fastqc and multiqc. | `FALSE` |
 
 ### Optional parameters
