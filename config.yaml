@@ -7,9 +7,9 @@ list_files: "/home/aschick/projects/arrieta/list_files_test.txt"
 # Path to raw sequences
 path: "/home/aschick/projects/arrieta/data/rawdata/"
 # Suffix for forward reads
-for: "_R1_001.fastq"
+for: "_R1_001"
 # Suffix for reverse reads
-rev: "_R2_001.fastq"
+rev: "_R2_001"
 # Run fastqc and multiqc only
 qc_only: FALSE
 

@@ -17,7 +17,7 @@ qc = config["qc_only"]
 
 def all_input_reads(qc):
     if config["qc_only"]:
-        return expand(config["path"]+"{sample}"+config["for"], sample=SAMPLES)
+        return expand(config["path"]+"{sample}"+config["for"]+".fastq", sample=SAMPLES)
     else:
         if config["run_bbmap"]:
             return expand("output/bbmap/{sample}_bbmapped_1.fastq", sample=SAMPLES)
@@ -37,8 +37,8 @@ rule all:
 
 rule fastqc:
     input:
-        r1 = config["path"]+"{sample}"+config["for"],
-        r2 = config["path"]+"{sample}"+config["rev"]
+        r1 = config["path"]+"{sample}"+config["for"]+".fastq",
+        r2 = config["path"]+"{sample}"+config["rev"]+".fastq"
     output:
         r1 = "output/fastqc/{sample}"+config["for"]+"_fastqc.html",
         r2 = "output/fastqc/{sample}"+config["rev"]+"_fastqc.html"
@@ -55,8 +55,8 @@ rule multiqc:
 
 rule cutadapt:
     input:
-        r1 = config["path"]+"{sample}"+config["for"],
-        r2 = config["path"]+"{sample}"+config["rev"]
+        r1 = config["path"]+"{sample}"+config["for"]+".fastq",
+        r2 = config["path"]+"{sample}"+config["rev"]+".fastq"
     output:
         r1 = "output/cutadapt/{sample}_r1_trimmed.fastq",
         r2 = "output/cutadapt/{sample}_r2_trimmed.fastq"
@@ -68,8 +68,8 @@ rule cutadapt:
 
 rule prinseq:
     input:
-        r1 = "output/cutadapt/{sample}_r1_trimmed.fastq" if config["run_cutadapt"] else config["path"]+"{sample}"+config["for"],
-        r2 = "output/cutadapt/{sample}_r2_trimmed.fastq" if config["run_cutadapt"] else config["path"]+"{sample}"+config["rev"]
+        r1 = "output/cutadapt/{sample}_r1_trimmed.fastq" if config["run_cutadapt"] else config["path"]+"{sample}"+config["for"]+".fastq",
+        r2 = "output/cutadapt/{sample}_r2_trimmed.fastq" if config["run_cutadapt"] else config["path"]+"{sample}"+config["rev"]+".fastq"
     params:
         prefix = "output/prinseq/{sample}_filtered"
     output:
