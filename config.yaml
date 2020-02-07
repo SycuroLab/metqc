@@ -5,7 +5,7 @@
 # List of files
 list_files: "/home/aschick/projects/arrieta/list_files_test.txt"
 # Path to raw sequences
-path: "/home/aschick/projects/arrieta/data/rawdata"
+path: "/home/aschick/projects/arrieta/data/rawdata/"
 # Suffix for forward reads
 for: "_R1_001.fastq"
 # Suffix for reverse reads
