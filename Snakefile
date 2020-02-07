@@ -40,15 +40,15 @@ rule fastqc:
         r1 = config["path"]+"{sample}"+config["for"],
         r2 = config["path"]+"{sample}"+config["rev"]
     output:
-        r1 = "output/fastqc/{sample}_1_fastqc.html",
-        r2 = "output/fastqc/{sample}_2_fastqc.html"
+        r1 = "output/fastqc/{sample}"+config["for"]+"_fastqc.html",
+        r2 = "output/fastqc/{sample}"+config["rev"]+"_fastqc.html"
     conda: "utils/envs/fastqc_env.yaml"
     shell: "fastqc -o output/fastqc {input.r1} {input.r2}"
 
 rule multiqc:
     input:
-        r1 = expand("output/fastqc/{sample}_1_fastqc.html", sample=SAMPLES),
-        r2 = expand("output/fastqc/{sample}_2_fastqc.html", sample=SAMPLES)
+        r1 = expand("output/fastqc/{sample}"+config["for"]+"_fastqc.html", sample=SAMPLES),
+        r2 = expand("output/fastqc/{sample}"+config["rev"]+"_fastqc.html", sample=SAMPLES)
     output: "results/multiqc_report.html"
     conda: "utils/envs/multiqc_env.yaml"
     shell: "multiqc -f output/fastqc -o results -n multiqc_report.html"
