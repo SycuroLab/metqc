@@ -12,8 +12,19 @@ import pandas as pd
 SAMPLES = pd.read_csv(config["list_files"], header = None)
 SAMPLES = SAMPLES[0].tolist()
 
-import subprocess
-from os.path import join
+# **** Define logic ****
+
+def all_input_reads:
+    if config["qc_only"]:
+        return expand(config["path"]+"{sample}"+config["for"], sample=SAMPLES)
+    else:    
+        if config["run_bbmap"]:
+            return expand("output/bbmap/{sample}_bbmapped_1.fastq", sample=SAMPLES)
+        else:
+            if config["run_bmtagger"]:
+                return expand("output/bmtagger/{sample}_bmtagged_1.fastq", sample=SAMPLES)
+            else:
+                return expand("output/prinseq/{sample}_filtered_1.fastq", sample=SAMPLES)
 
 # **** Rules ****
 
@@ -21,8 +32,7 @@ rule all:
     input:
         "results/multiqc_report.html",
         "" if config["qc_only"] else "results/multiqc_report_filtered.html",
-        expand("output/bmtagger/{sample}_bmtagged_1.fastq", sample=SAMPLES) if config["run_bmtagger"],
-        
+        all_input_reads
 
 rule fastqc:
     input:
@@ -57,8 +67,8 @@ rule cutadapt:
 
 rule prinseq:
     input:
-        r1 = "output/cutadapt/{sample}_r1_trimmed.fastq" if config["run_cutadapt"] else join(config["path"], "{sample}_1.fastq"),
-        r2 = "output/cutadapt/{sample}_r2_trimmed.fastq" if config["run_cutadapt"] else join(config["path"], "{sample}_2.fastq")
+        r1 = "output/cutadapt/{sample}_r1_trimmed.fastq" if config["run_cutadapt"] else config["path"]+"{sample}"+config["for"],
+        r2 = "output/cutadapt/{sample}_r2_trimmed.fastq" if config["run_cutadapt"] else config["path"]+"{sample}"+config["rev"]
     params:
         prefix = "output/prinseq/{sample}_filtered"
     output:
@@ -107,15 +117,15 @@ rule bmtagger:
 
 rule bbmap:
     input:
-        r1 = "output/prinseq/{sample}_filtered_1.fastq",
-        r2 = "output/prinseq/{sample}_filtered_2.fastq"
+        r1 = "output/bmtagger/{sample}_bmtagged_1.fastq" if config["run_bmtagger"] else "output/prinseq/{sample}_filtered_1.fastq",
+        r2 = "output/bmtagger/{sample}_bmtagged_2.fastq" if config["run_bmtagger"] else "output/prinseq/{sample}_filtered_2.fastq"
     output:
         ur1 = "output/bbmap/{sample}_bbmapped_1.fastq",
         ur2 = "output/bbmap/{sample}_bbmapped_2.fastq",
         mr1 = "output/bbmap/{sample}_human_reads_1.fastq",
         mr2 = "output/bbmap/{sample}_human_reads_2.fastq"
     params:
-        i = "output/bmtagger/{sample}_filtered_#.fastq",
+        i = "output/bmtagger/{sample}_bmtagged_#.fastq" if config["run_bmtagger"] else "output/prinseq/{sample}_filtered_#.fastq",
         u = "output/bbmap/{sample}_bbmapped_#.fastq",
         m = "output/bbmap/{sample}_human_reads_#.fastq",
         pre = "{sample}"
