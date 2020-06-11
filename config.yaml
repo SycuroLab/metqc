@@ -25,14 +25,14 @@ minlength: 60
 maxn: 10
 
 ### Prinseq parameters
-trimleft: 5
-trimright: 5
-trim_qual_left: 30
-trim_qual_right: 30
+trimleft: 0
+trimright: 0
+trim_qual_left: 25
+trim_qual_right: 25
 trim_qual_window: 10
 trim_qual_step : 2
 trim_qual_type: "mean"
-trim_qual_rule: "gt"
+trim_qual_rule: "lt"
 lc_method: "dust"
 lc_threshold: 7
 
