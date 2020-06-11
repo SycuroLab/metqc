@@ -82,7 +82,8 @@ rule prinseq:
             "-out_good {params.prefix} -out_bad null -lc_method {config[lc_method]} -lc_threshold {config[lc_threshold]} "
             "-derep 1 -trim_qual_type {config[trim_qual_type]} -trim_qual_window "
             "{config[trim_qual_window]} -trim_qual_step {config[trim_qual_step]} "
-            "-trim_qual_rule {config[trim_qual_rule]}"
+            "-trim_qual_rule {config[trim_qual_rule]} -trim_qual_left {config[trim_qual_left]} "
+            "-trim_qual_right {config[trim_qual_right]}"
 
 rule fastqc_filt:
     input:
