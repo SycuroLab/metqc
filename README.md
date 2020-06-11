@@ -28,24 +28,22 @@ NOTE: to disable all steps besides fastqc/multiqc, set the parameter `qc_only` t
 2) Adapter trimming using cutadapt. This step is optional; to disable set the parameter `run_cutadapt = FALSE` in the config file. If using cutadapt, specify the adapter sequences to be trimmed in the config file. This step outputs trimmed sequence files to a directory called `output/cutadapt/` and adds the suffix 'trimmed' to file names.
 
 	Options:
-		
-		* minlength: reads shorter than this will be discarded (default: 60)
-		* maxn: maximum number of N bases allowed (default: 10)
+	* minlength: reads shorter than this will be discarded (default: 60)
+	* maxn: maximum number of N bases allowed (default: 10)
 
 3) PRINSEQ - quality filtering, dereplication, and filtering of low complexity reads. This step outputs filtered sequence files to a directory called `output/prinseq/` and adds the suffix 'filtered' to file names.
 
 	Options:
-	
-		* trimleft: trim from the 5' end (default: 0)
-		* trimright: trim from the 3' end (default: 0)
-		* trim_qual_left: trim sequence by quality score from the 5' end with this threshold score (default: 25)
-		* trim_qual_right: trim sequence by quality score from the 3' end with this threshold score (default: 25)
-		* trim_qual_window: size of sliding window used to calculate quality score (default: 10)
-		* trim_qual_step: step size used to move the sliding window (default: 2)
-		* trim_qual_type: type of quality score calculation to use (default: mean)
-		* trim_qual_rule: rule to use to compare quality score to calculated value (default: lt)
-		* lc_method: method to filter low complexity sequences (default: dust)
-		* lc_threshold: value used to filter sequences by sequence complexity (default: 7)
+	* trimleft: trim from the 5' end (default: 0)
+	* trimright: trim from the 3' end (default: 0)
+	* trim_qual_left: trim sequence by quality score from the 5' end with this threshold score (default: 25)
+	* trim_qual_right: trim sequence by quality score from the 3' end with this threshold score (default: 25)
+	* trim_qual_window: size of sliding window used to calculate quality score (default: 10)
+	* trim_qual_step: step size used to move the sliding window (default: 2)
+	* trim_qual_type: type of quality score calculation to use (default: mean)
+	* trim_qual_rule: rule to use to compare quality score to calculated value (default: lt)
+	* lc_method: method to filter low complexity sequences (default: dust)
+	* lc_threshold: value used to filter sequences by sequence complexity (default: 7)
 
 4) QC on filtered reads using fastqc and multiqc. This step generates an html file called `multiqc_report_filtered.html` in the `results` directory.
 
