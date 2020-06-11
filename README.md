@@ -28,8 +28,8 @@ NOTE: to disable all steps besides fastqc/multiqc, set the parameter `qc_only` t
 2) Adapter trimming using cutadapt. This step is optional; to disable set the parameter `run_cutadapt = FALSE` in the config file. If using cutadapt, specify the adapter sequences to be trimmed in the config file. This step outputs trimmed sequence files to a directory called `output/cutadapt/` and adds the suffix 'trimmed' to file names.
 
 	Options:
-		*minlength: reads shorter than this will be discarded (default: 60)
-		*maxn: maximum number of N bases allowed (default: 10)
+		* minlength: reads shorter than this will be discarded (default: 60)
+		* maxn: maximum number of N bases allowed (default: 10)
 
 3) PRINSEQ - quality filtering, dereplication, and filtering of low complexity reads. This step outputs filtered sequence files to a directory called `output/prinseq/` and adds the suffix 'filtered' to file names.
 
