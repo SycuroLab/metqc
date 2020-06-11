@@ -34,12 +34,14 @@ NOTE: to disable all steps besides fastqc/multiqc, set the parameter `qc_only` t
 3) PRINSEQ - quality filtering, dereplication, and filtering of low complexity reads. This step outputs filtered sequence files to a directory called `output/prinseq/` and adds the suffix 'filtered' to file names.
 
 	Options:
-		*trimleft: trim by quality score from the 5' end with this threshold (default: 20)
-		*trimright: trim by quality score from the 3' end with this threshold (default: 20)
+		*trimleft: trim from the 5' end (default: 0)
+		*trimright: trim from the 3' end (default: 0)
+		*trim_qual_left: trim sequence by quality score from the 5' end with this threshold score (default: 25)
+		*trim_qual_right: trim sequence by quality score from the 3' end with this threshold score (default: 25)
 		*trim_qual_window: size of sliding window used to calculate quality score (default: 10)
 		*trim_qual_step: step size used to move the sliding window (default: 2)
 		*trim_qual_type: type of quality score calculation to use (default: mean)
-		*trim_qual_rule: rule to use to compare quality score to calculated value (default: gt)
+		*trim_qual_rule: rule to use to compare quality score to calculated value (default: lt)
 		*lc_method: method to filter low complexity sequences (default: dust)
 		*lc_threshold: value used to filter sequences by sequence complexity (default: 7)
 
@@ -90,11 +92,13 @@ ls | grep R1_001.fastq | sed 's/_R1_001.fastq//' > list_files.txt
 | rev_adapter | Reverse adapter sequence (5' adapter) | `CTGTCTCTTAT...` |
 | minlength | Reads shorter than this will be discarded (if using cutadapt) | `60` | 
 | maxn | Maximum number of N bases allowed, reads with more will be discarded | `10` |
-| trimleft | Trim sequence by quality score from the 5'-end with this threshold score | `20` |
-| trimright | Trim sequence by quality score from the 3'-end with this threshold score | `20` |
+| trimleft | Trim sequence from the 5'-end | `0` |
+| trimright | Trim sequence from the 3'-end | `0` |
+| trim_qual_left | Trim sequence by quality score from the 5' end with this threshold score | `25`|
+| trim_qual_right | Trim sequence by quality score from the 3' end with this threshold score | `25`|
 | trim_qual_window | The sliding window size used to calculate quality score by type | `10` |
 | trim_qual_step | Step size used to move the sliding window | `2` | 
-| trim_qual_rule | Rule to use to compare quality score to calculated value. Allowed options are lt (less than), gt (greater than, default) and et (equal to) | `"gt"` | 
+| trim_qual_rule | Rule to use to compare quality score to calculated value. Allowed options are lt (less than), gt (greater than, default) and et (equal to) | `"lt"` | 
 | trim_qual_type | Type of quality score calculation to use, allowed options are: min, mean (default), max, sum | `"mean"` |
 | run_bmtagger | Whether or not to run bmtagger | `TRUE` |
 | bmfilter_ref | Index for bmfilter (part of bmtagger), should be a bitmask file, see [link](https://www.westgrid.ca/support/software/bmtagger) for more info | `"/home/refs/hg19/hg19_rRNA_reference.bitmask"` |
