@@ -78,7 +78,7 @@ rule prinseq:
     conda: "utils/envs/prinseq_env.yaml"
     shell:
             "perl utils/scripts/prinseq-lite.pl -fastq {input.r1} -fastq2 {input.r2} "
-            "-trim_qual_left {config[trimleft]} -trim_qual_right {config[trimright]} "
+            "-trim_left {config[trimleft]} -trim_right {config[trimright]} "
             "-out_good {params.prefix} -out_bad null -lc_method {config[lc_method]} -lc_threshold {config[lc_threshold]} "
             "-derep 1 -trim_qual_type {config[trim_qual_type]} -trim_qual_window "
             "{config[trim_qual_window]} -trim_qual_step {config[trim_qual_step]} "
