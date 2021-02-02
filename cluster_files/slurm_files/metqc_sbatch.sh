@@ -1,11 +1,11 @@
 #!/bin/bash
 
-#SBATCH --partition=lattice,parallel
+#SBATCH --partition=cpu2019
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --time=20:00:00
-#SBATCH --mem=1G
+#SBATCH --mem=5G
 #SBATCH --error=metqc_sbatch_run.%J.err
 #SBATCH --output=metqc_sbatch_run.%J.out
 
