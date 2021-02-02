@@ -106,7 +106,28 @@ ls | grep R1_001.fastq | sed 's/_R1_001.fastq//' > list_files.txt
 | run_bbmap | Whether or not to run bbmap | `FALSE` |
 | bbmap_ref | Name of reference fasta for bbmap to align reads | `"/home/refs.hs37.fa"` |
 
-## Running the pipeline on Synergy
+## Running the pipeline on ARC (SLURM cluster)
+
+Test the pipeline by running `snakemake -np`. This command prints out the commands to be run without actually running them. 
+
+To run the pipeline on the ARC compute cluster, enter the following command from the project directory:
+
+```
+snakemake --cluster-config cluster.json --cluster 'sbatch --partition={cluster.partition} --cpus-per-task={cluster.cpus-per-task} --nodes={cluster.nodes} --ntasks={cluster.ntasks} --time={cluster.time} --mem={cluster.mem} --output={cluster.output} --error={cluster.error}' --jobs 500
+
+```
+The above command submits jobs to ARC, one for each sample and step of the QC pipeline. Note: the file `cluster.json` contains the parameters for the SLURM job submission system that ARC uses. In most cases, this file should not be modified.
+
+Use the `cluster.json` file in the `cluster_files/slurm_files/` folder. The `metqc_sbatch.sh` file can be used to run the metqc snakemake pipeline on node and one cpu using the following command `sbatch < metqc_sbatch.sh`. The above command submits jobs to ARC, one for each sample and step of the QC pipeline.
+
+The ARC Cluster Guide can be found here:
+https://rcs.ucalgary.ca/index.php/ARC_Cluster_Guide
+
+The General Guidelines and Policies can be found here:
+https://rcs.ucalgary.ca/index.php/General_Cluster_Guidelines_and_Policies
+
+
+## Running the pipeline on Synergy (LSF cluster)
 
 Test the pipeline by running `snakemake -np`. This command prints out the commands to be run without actually running them. 
 
