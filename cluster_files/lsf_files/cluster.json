@@ -1,0 +1,30 @@
+{
+  "__default__" :
+  {
+    "n" : 28,
+    "resources" : "\"rusage[mem=5000] span[hosts=1]\"",
+    "walllim" : "12:00",
+    "time" : "06:00",
+    "maxmem" : 20000,
+    "output" : "logs/{rule}.{wildcards}.out",
+    "error" : "logs/{rule}.{wildcards}.err"
+  },
+
+  "prinseq" :
+  {
+    "time" : "40:00",
+    "walllim" : "80:00"
+  },
+
+  "bmtagger" :
+  {
+    "time" : "10:00",
+    "walllim" : "20:00"
+  },
+
+  "bbmap" :
+  {
+    "time" : "5:00",
+    "walllim": "10:00"
+  }
+}
