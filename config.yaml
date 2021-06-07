@@ -3,32 +3,35 @@
 # *********************************
 
 # List of files
-list_files: "/home/aschick/projects/arrieta/list_files_test.txt"
+list_files: "/home/kevin.muirhead/metqc_update/metqc/KG_files.txt"
+#list_files: "/home/kevin.muirhead/metqc_update/metqc/KG_1_file.txt"
+
 # Path to raw sequences
-path: "/home/aschick/projects/arrieta/data/rawdata/"
+path: "/bulk/sycuro_bulk/lsycuro_labshare/kevin/417_419_Project_2020_2021/datasets/KG_18_metagenomics/"
+
 # Suffix for forward reads
-for: "_R1_001"
+for: "_R1"
+
 # Suffix for reverse reads
-rev: "_R2_001"
+rev: "_R2"
+
 # Run fastqc and multiqc only
 qc_only: FALSE
 
 ### Cutadapt parameters
+
 # Choose whether to run cutadapt
-run_cutadapt: FALSE
+run_cutadapt: TRUE
+
 # Adapters for cutadapt
-fwd_adapter: CTGTCTCTTATACACATCTCCGAGCCCACGAGACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG
-rev_adapter: CTGTCTCTTATACACATCTGACGCTGCCGACGANNNNNNNNGTGTAGATCTCGGTGGTCGCCGTATCATT
-# Minimum length for cutadapt
-minlength: 60
-# Maximum number of N bases allowed
-maxn: 10
+fwd_adapter: AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
+rev_adapter: AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT
 
 ### Prinseq parameters
 trimleft: 0
 trimright: 0
-trim_qual_left: 25
-trim_qual_right: 25
+trim_qual_left: 30
+trim_qual_right: 30
 trim_qual_window: 10
 trim_qual_step : 2
 trim_qual_type: "mean"
@@ -36,16 +39,27 @@ trim_qual_rule: "lt"
 lc_method: "dust"
 lc_threshold: 7
 
+# Minimum length for reads
+minlength: 60
+
+# Maximum number of N bases allowed
+maxn: 15
+
 ### BMtagger Parameters
+
 # Choose whether to run bmtagger
 run_bmtagger: TRUE
+
 # Index for bmfilter (part of bmtagger), bitmask file
-bmfilter_ref: "/home/aschick/refs/hg19/hg19_rRNA_mito_Hsapiens_rna_reference.bitmask"
+bmfilter_ref: "/bulk/IMCshared_bulk/shared/dbs/bmtaggerDB/hg19_rRNA_mito_Hsapiens_rna/hg19_rRNA_mito_Hsapiens_rna_reference.bitmask"
+
 # Index for srprism (part of bmtagger)
-srprism_ref: "/home/aschick/refs/hg19/hg19_rRNA_mito_Hsapiens_rna_reference.srprism"
+srprism_ref: "/bulk/IMCshared_bulk/shared//dbs/bmtaggerDB/hg19_rRNA_mito_Hsapiens_rna/hg19_rRNA_mito_Hsapiens_rna_reference.srprism"
 
 ### BBMap parameters
 # Choose whether to run bbmap
 run_bbmap: FALSE
+
 # Path and name of reference fasta for bbmap
 bbmap_ref: "/home/aschick/refs/hs37.fa"
+

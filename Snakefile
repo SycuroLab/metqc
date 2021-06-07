@@ -32,8 +32,8 @@ def all_input_reads(qc):
 rule all:
     input:
         "results/multiqc_report.html",
-        "results/multiqc_report.html" if config["qc_only"] else "results/multiqc_report_filtered.html",
-        all_input_reads
+        "results/multiqc_report.html" if config["qc_only"] else "results/multiqc_report_prinseq_filtered.html", 
+        "results/multiqc_report_bmtagger_filtered.html", all_input_reads
 
 rule fastqc:
     input:
@@ -62,8 +62,8 @@ rule cutadapt:
         r2 = "output/cutadapt/{sample}_r2_trimmed.fastq"
     conda: "utils/envs/cutadapt_env.yaml"
     shell:
-            "cutadapt -m {config[minlength]} --max-n {config[maxn]} -a {config[fwd_adapter]} "
-            "-A {config[rev_adapter]} -o {output.r1} -p {output.r2} "
+            "cutadapt -a {config[fwd_adapter]} -A {config[rev_adapter]} "
+            "-o {output.r1} -p {output.r2} "
             "{input.r1} {input.r2}"
 
 rule prinseq:
@@ -83,9 +83,10 @@ rule prinseq:
             "-derep 1 -trim_qual_type {config[trim_qual_type]} -trim_qual_window "
             "{config[trim_qual_window]} -trim_qual_step {config[trim_qual_step]} "
             "-trim_qual_rule {config[trim_qual_rule]} -trim_qual_left {config[trim_qual_left]} "
-            "-trim_qual_right {config[trim_qual_right]}"
+            "-trim_qual_right {config[trim_qual_right]} -min_len {config[minlength]}"
+			"-ns_max_n {config[maxn]}"
 
-rule fastqc_filt:
+rule fastqc_prinseq_filt:
     input:
         r1 = "output/prinseq/{sample}_filtered_1.fastq",
         r2 = "output/prinseq/{sample}_filtered_2.fastq"
@@ -95,13 +96,13 @@ rule fastqc_filt:
     conda: "utils/envs/fastqc_env.yaml"
     shell: "fastqc -o output/prinseq/fastqc {input.r1} {input.r2}"
 
-rule multiqc_filt:
+rule multiqc_prinseq_filt:
     input:
         r1 = expand("output/prinseq/fastqc/{sample}_filtered_1_fastqc.html", sample=SAMPLES),
         r2 = expand("output/prinseq/fastqc/{sample}_filtered_2_fastqc.html", sample=SAMPLES)
-    output: "results/multiqc_report_filtered.html"
+    output: "results/multiqc_report_prinseq_filtered.html"
     conda: "utils/envs/multiqc_env.yaml"
-    shell: "multiqc -f output/prinseq/fastqc -o results -n multiqc_report_filtered.html"
+    shell: "multiqc -f output/prinseq/fastqc -o results -n multiqc_report_prinseq_filtered.html"
 
 rule bmtagger:
     input:
@@ -117,6 +118,24 @@ rule bmtagger:
         "bmtagger.sh -b {config[bmfilter_ref]} -x {config[srprism_ref]} -q 1 -1 "
         "{input.r1} -2 {input.r2} -o {params.n} -X"
 
+rule fastqc_bmtagger_filt:
+    input:
+        r1 = "output/bmtagger/{sample}_bmtagged_1.fastq",
+        r2 = "output/bmtagger/{sample}_bmtagged_2.fastq"
+    output:
+        r1 = "output/bmtagger/fastqc/{sample}_bmtagged_1_fastqc.html",
+        r2 = "output/bmtagger/fastqc/{sample}_bmtagged_2_fastqc.html"
+    conda: "utils/envs/fastqc_env.yaml"
+    shell: "fastqc -o output/bmtagger/fastqc {input.r1} {input.r2}"
+
+rule multiqc_bmtagger_filt:
+    input:
+        r1 = expand("output/bmtagger/fastqc/{sample}_bmtagged_1_fastqc.html", sample=SAMPLES),
+        r2 = expand("output/bmtagger/fastqc/{sample}_bmtagged_2_fastqc.html", sample=SAMPLES)
+    output: "results/multiqc_report_bmtagger_filtered.html"
+    conda: "utils/envs/multiqc_env.yaml"
+    shell: "multiqc -f output/bmtagger/fastqc -o results -n multiqc_report_bmtagger_filtered.html"
+	
 rule bbmap:
     input:
         r1 = "output/bmtagger/{sample}_bmtagged_1.fastq" if config["run_bmtagger"] else "output/prinseq/{sample}_filtered_1.fastq",
@@ -134,3 +153,4 @@ rule bbmap:
     conda: "utils/envs/bbmap_env.yaml"
     shell:
         "bbmap.sh in={params.i} outu={params.u} outm={params.m} ref={config[bbmap_ref]} nodisk scafstats=results/bbmap_stats/{params.pre}_scafstats.txt ihist=results/bbmap_stats/{params.pre}_ihist.txt statsfile=results/bbmap_stats/{params.pre}_statsfile.txt"
+
