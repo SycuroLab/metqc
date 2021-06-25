@@ -62,7 +62,7 @@ rule cutadapt:
         r2 = "output/cutadapt/{sample}_r2_trimmed.fastq"
     conda: "utils/envs/cutadapt_env.yaml"
     shell:
-            "cutadapt -a {config[fwd_adapter]} -A {config[rev_adapter]} "
+            "cutadapt -m {config[minlength]} --max-n {config[maxn]} -a {config[fwd_adapter]} -A {config[rev_adapter]} "
             "-o {output.r1} -p {output.r2} "
             "{input.r1} {input.r2}"
 
