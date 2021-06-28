@@ -2,28 +2,28 @@
   "__default__" :
   {
     "name": "metqc.{rule}.{wildcards}",
-    "partition": "synergy", 
+    "partition": "cpu2019", 
     "nodes": 1, 
     "ntasks": 1, 
-    "cpus-per-task": 7,
-    "time": "1-00:00:00",
-    "mem": "60G",
+    "cpus-per-task": 8, 
+    "time": "10:00:00",
+    "mem": "38G",
     "output" : "logs/{rule}.{wildcards}.out",
     "error" : "logs/{rule}.{wildcards}.err"
   },
 
   "prinseq" :
   {
-    "time" : "1-00:00:00",
+    "time" : "80:00:00",
   },
 
   "bmtagger" :
   {
-    "time" : "1-00:00:00",
+    "time" : "20:00:00",
   },
 
   "bbmap" :
   {
-    "time" : "1-00:00:00",
+    "time" : "5:00:00",
   }
 }
