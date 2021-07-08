@@ -6,9 +6,6 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --time=7-00:00:00
 #SBATCH --mem=5G
-#SBATCH --mail-type=end     # send email when job ends
-#SBATCH --mail-type=fail     # send email if job fails
-#SBATCH --mail-user=kevin.muirhead@ucalgary.ca
 #SBATCH --error=metqc_run.%J.err
 #SBATCH --output=metqc_run.%J.out
 
