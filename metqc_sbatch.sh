@@ -11,7 +11,7 @@
 
 log_dir="$(pwd)"
 log_file="logs/metqc-analysis.log.txt"
-num_jobs=10
+num_jobs=50
 
 echo "started at: `date`"
 

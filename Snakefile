@@ -12,12 +12,6 @@ import os
 SAMPLES = pd.read_csv(config["list_files"], header = None)
 SAMPLES = SAMPLES[0].tolist()
 
-# The forward read number for output files.
-forward_read_num = os.path.splitext(config["forward_read_suffix"])[0]
-
-# The reverse read number for output files.
-reverse_read_num = os.path.splitext(config["reverse_read_suffix"])[0]
-
 # **** Define logic ****
 qc = config["qc_only"]
 
@@ -46,8 +40,8 @@ rule fastqc:
         r1 = os.path.join(config["input_dir"],"{sample}"+config["forward_read_suffix"]),
         r2 = os.path.join(config["input_dir"],"{sample}"+config["reverse_read_suffix"])
     output:
-        r1 = os.path.join(config["output_dir"],"fastqc","{sample}"+forward_read_num+"_fastqc.html"),
-        r2 = os.path.join(config["output_dir"],"fastqc","{sample}"+reverse_read_num+"_fastqc.html")
+        r1 = os.path.join(config["output_dir"],"fastqc","{sample}_r1_fastqc.html"),
+        r2 = os.path.join(config["output_dir"],"fastqc","{sample}_r2_fastqc.html")
     params:
         fastqc_dir = os.path.join(config["output_dir"],"fastqc")
     conda: "utils/envs/fastqc_env.yaml"
@@ -55,8 +49,8 @@ rule fastqc:
 
 rule multiqc:
     input:
-        r1 = expand(os.path.join(config["output_dir"],"fastqc","{sample}"+forward_read_num+"_fastqc.html"), sample=SAMPLES),
-        r2 = expand(os.path.join(config["output_dir"],"fastqc","{sample}"+reverse_read_num+"_fastqc.html"), sample=SAMPLES)
+        r1 = expand(os.path.join(config["output_dir"],"fastqc","{sample}_r1_fastqc.html"), sample=SAMPLES),
+        r2 = expand(os.path.join(config["output_dir"],"fastqc","{sample}_r2_fastqc.html"), sample=SAMPLES)
     output: os.path.join(config["output_dir"],"multiqc","multiqc_report.html")
     params:
         fastqc_dir = os.path.join(config["output_dir"],"fastqc/"),
@@ -74,7 +68,7 @@ rule cutadapt:
     conda: "utils/envs/cutadapt_env.yaml"
     shell:
             "cutadapt -m {config[minlength]} --max-n {config[maxn]} -a {config[fwd_adapter]} -A {config[rev_adapter]} "
-            "-o {output.r1} -p {output.r2} "
+            "--cores=config[num_cpus] -o {output.r1} -p {output.r2} "
             "{input.r1} {input.r2}"
 
 rule prinseq:
@@ -95,7 +89,7 @@ rule prinseq:
             "{config[trim_qual_window]} -trim_qual_step {config[trim_qual_step]} "
             "-trim_qual_rule {config[trim_qual_rule]} -trim_qual_left {config[trim_qual_left]} "
             "-trim_qual_right {config[trim_qual_right]} -min_len {config[minlength]} "
-	    "-ns_max_n {config[maxn]}"
+			"-ns_max_n {config[maxn]}"
 
 rule fastqc_prinseq_filt:
     input:

@@ -22,6 +22,9 @@ qc_only: FALSE
 
 ### Cutadapt parameters
 
+# The number of cpu cores to use for cutadapt
+num_cpus: 7
+
 # Choose whether to run cutadapt
 run_cutadapt: TRUE
 
