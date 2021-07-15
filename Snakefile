@@ -74,7 +74,7 @@ rule cutadapt:
     conda: "utils/envs/cutadapt_env.yaml"
     shell:
             "cutadapt -m {config[minlength]} --max-n {config[maxn]} -a {config[fwd_adapter]} -A {config[rev_adapter]} "
-            "--cores=config[num_cpus] -o {output.r1} -p {output.r2} "
+            "--cores {config[num_cpus]} -o {output.r1} -p {output.r2} "
             "{input.r1} {input.r2}"
 
 rule prinseq:
