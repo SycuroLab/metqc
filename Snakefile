@@ -13,10 +13,21 @@ SAMPLES = pd.read_csv(config["list_files"], header = None)
 SAMPLES = SAMPLES[0].tolist()
 
 # The forward read number for output files.
-forward_read_num = os.path.splitext(config["forward_read_suffix"])[0]
+forward_read_num = config["forward_read_suffix"].split(".",1)[0]
 
 # The reverse read number for output files.
-reverse_read_num = os.path.splitext(config["reverse_read_suffix"])[0]
+reverse_read_num = config["reverse_read_suffix"].split(".",1)[0]
+
+#reverse_read_num = os.path.splitext(config["reverse_read_suffix"])[0]
+print(reverse_read_num)
+
+
+## Added new code above because this fails when fastq.gz is the file type
+# The forward read number for output files.
+#forward_read_num = os.path.splitext(config["forward_read_suffix"])[0]
+
+# The reverse read number for output files.
+#reverse_read_num = os.path.splitext(config["reverse_read_suffix"])[0]
 
 # **** Define logic ****
 qc = config["qc_only"]
