@@ -3,19 +3,19 @@
 # *********************************
 
 # List of files
-list_files: "/home/kevin.muirhead/metqc_update/metqc/KG_files.txt"
+list_files: "/bulk/IMCshared_bulk/sycuro_shared_projects/IMPACTT_benchmarking/IMPACTT_sample_handling/shotgun/2022_09_09/analysis/list_files.txt"
 
 # Input directory Path to raw sequences
-input_dir: "/bulk/sycuro_bulk/lsycuro_labshare/kevin/417_419_Project_2020_2021/datasets/KG_18_metagenomics"
+input_dir: "/bulk/IMCshared_bulk/sycuro_shared_projects/IMPACTT_benchmarking/IMPACTT_sample_handling/shotgun/2022_09_09/data/"
 
 # Output directory path for output files.
-output_dir: "/work/sycuro_lab/kevin/metqc_test_2021-06-23"
+output_dir: "output"
 
 # Suffix for forward reads.
-forward_read_suffix: "_R1.fastq"
+forward_read_suffix: "_1.fastq.gz"
 
 # Suffix for reverse reads.
-reverse_read_suffix: "_R2.fastq"
+reverse_read_suffix: "_2.fastq.gz"
 
 # Run fastqc and multiqc only
 qc_only: FALSE

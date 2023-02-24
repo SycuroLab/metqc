@@ -22,12 +22,6 @@ reverse_read_num = config["reverse_read_suffix"].split(".",1)[0]
 print(reverse_read_num)
 
 
-## Added new code above because this fails when fastq.gz is the file type
-# The forward read number for output files.
-#forward_read_num = os.path.splitext(config["forward_read_suffix"])[0]
-
-# The reverse read number for output files.
-#reverse_read_num = os.path.splitext(config["reverse_read_suffix"])[0]
 
 # **** Define logic ****
 qc = config["qc_only"]
@@ -48,32 +42,33 @@ def all_input_reads(qc):
 
 rule all:
     input:
-        os.path.join(config["output_dir"],"multiqc","multiqc_report.html"),
-        os.path.join(config["output_dir"],"multiqc","multiqc_report.html") if config["qc_only"] else os.path.join(config["output_dir"],"multiqc","multiqc_report_prinseq_filtered.html"),
+        os.path.join(config["output_dir"],"multiqc","multiqc_report_raw.html"),
+        config["output_dir"]+"/qc_seqkit.csv",
+        os.path.join(config["output_dir"],"multiqc","multiqc_report_raw.html") if config["qc_only"] else os.path.join(config["output_dir"],"multiqc","multiqc_report_prinseq_filtered.html"),
         os.path.join(config["output_dir"],"multiqc","multiqc_report_bmtagger_filtered.html"), all_input_reads
 
-rule fastqc:
+rule fastqc_raw:
     input:
         r1 = os.path.join(config["input_dir"],"{sample}"+config["forward_read_suffix"]),
         r2 = os.path.join(config["input_dir"],"{sample}"+config["reverse_read_suffix"])
     output:
-        r1 = os.path.join(config["output_dir"],"fastqc","{sample}"+forward_read_num+"_fastqc.html"),
-        r2 = os.path.join(config["output_dir"],"fastqc","{sample}"+reverse_read_num+"_fastqc.html")
+        r1 = os.path.join(config["output_dir"],"fastqc_raw","{sample}"+forward_read_num+"_fastqc.html"),
+        r2 = os.path.join(config["output_dir"],"fastqc_raw","{sample}"+reverse_read_num+"_fastqc.html")
     params:
-        fastqc_dir = os.path.join(config["output_dir"],"fastqc")
-    conda: "utils/envs/fastqc_env.yaml"
+        fastqc_dir = os.path.join(config["output_dir"],"fastqc_raw")
+    conda: "fastqc"
     shell: "fastqc -o {params.fastqc_dir} {input.r1} {input.r2}"
 
-rule multiqc:
+rule multiqc_raw:
     input:
-        r1 = expand(os.path.join(config["output_dir"],"fastqc","{sample}"+forward_read_num+"_fastqc.html"), sample=SAMPLES),
-        r2 = expand(os.path.join(config["output_dir"],"fastqc","{sample}"+reverse_read_num+"_fastqc.html"), sample=SAMPLES)
-    output: os.path.join(config["output_dir"],"multiqc","multiqc_report.html")
+        r1 = expand(os.path.join(config["output_dir"],"fastqc_raw","{sample}"+forward_read_num+"_fastqc.html"), sample=SAMPLES),
+        r2 = expand(os.path.join(config["output_dir"],"fastqc_raw","{sample}"+reverse_read_num+"_fastqc.html"), sample=SAMPLES)
+    output: os.path.join(config["output_dir"],"multiqc","multiqc_report_raw.html")
     params:
-        fastqc_dir = os.path.join(config["output_dir"],"fastqc/"),
+        fastqc_dir = os.path.join(config["output_dir"],"fastqc_raw/"),
 	multiqc_dir = os.path.join(config["output_dir"],"multiqc/")
-    conda: "utils/envs/multiqc_env.yaml"
-    shell: "multiqc -f {params.fastqc_dir} -o {params.multiqc_dir} -n multiqc_report.html"
+    conda: "multiqc"
+    shell: "multiqc -c utils/multiqc_config.yaml -f {params.fastqc_dir} -o {params.multiqc_dir} -n multiqc_report_raw.html"
 
 rule cutadapt:
     input:
@@ -82,7 +77,7 @@ rule cutadapt:
     output:
         r1 = os.path.join(config["output_dir"],"cutadapt","{sample}_r1_trimmed.fastq"),
         r2 = os.path.join(config["output_dir"],"cutadapt","{sample}_r2_trimmed.fastq")
-    conda: "utils/envs/cutadapt_env.yaml"
+    conda: "cutadapt"
     shell:
             "cutadapt -m {config[minlength]} --max-n {config[maxn]} -a {config[fwd_adapter]} -A {config[rev_adapter]} "
             "-j {config[num_cpus]} -o {output.r1} -p {output.r2} "
@@ -97,7 +92,7 @@ rule prinseq:
     output:
         r1 = os.path.join(config["output_dir"],"prinseq","{sample}_filtered_1.fastq"),
         r2 = os.path.join(config["output_dir"],"prinseq","{sample}_filtered_2.fastq")
-    conda: "utils/envs/prinseq_env.yaml"
+    conda: "prinseq"
     shell:
             "perl utils/scripts/prinseq-lite.pl -fastq {input.r1} -fastq2 {input.r2} "
             "-trim_left {config[trimleft]} -trim_right {config[trimright]} "
@@ -108,6 +103,22 @@ rule prinseq:
             "-trim_qual_right {config[trim_qual_right]} -min_len {config[minlength]} "
 			"-ns_max_n {config[maxn]}"
 
+rule bmtagger:
+    input:
+        r1 = os.path.join(config["output_dir"],"prinseq","{sample}_filtered_1.fastq"),
+        r2 = os.path.join(config["output_dir"],"prinseq","{sample}_filtered_2.fastq")
+    output:
+        r1 = os.path.join(config["output_dir"],"bmtagger","{sample}_bmtagged_1.fastq"),
+        r2 = os.path.join(config["output_dir"],"bmtagger","{sample}_bmtagged_2.fastq"),
+    params:
+        n = os.path.join(config["output_dir"],"bmtagger","{sample}_bmtagged"),
+        r3 = os.path.join(config["output_dir"],"bmtagger","bmtagger_complete.txt")
+    conda: "bmtagger"
+    shell:
+        "bmtagger.sh -b {config[bmfilter_ref]} -x {config[srprism_ref]} -q 1 -1 {input.r1} -2 {input.r2} -o {params.n} -X;"
+        " touch  {params.r3}"
+
+
 rule fastqc_prinseq_filt:
     input:
         r1 = os.path.join(config["output_dir"],"prinseq","{sample}_filtered_1.fastq"),
@@ -117,7 +128,7 @@ rule fastqc_prinseq_filt:
         r2 = os.path.join(config["output_dir"],"prinseq","fastqc","{sample}_filtered_2_fastqc.html")
     params:
         fastqc_dir = os.path.join(config["output_dir"],"prinseq","fastqc/")
-    conda: "utils/envs/fastqc_env.yaml"
+    conda: "fastqc"
     shell: "fastqc -o {params.fastqc_dir} {input.r1} {input.r2}"
 
 rule multiqc_prinseq_filt:
@@ -128,22 +139,9 @@ rule multiqc_prinseq_filt:
     params:
         fastqc_dir = os.path.join(config["output_dir"],"prinseq","fastqc/"),
         multiqc_dir = os.path.join(config["output_dir"],"multiqc/")
-    conda: "utils/envs/multiqc_env.yaml"
-    shell: "multiqc -f {params.fastqc_dir} -o {params.multiqc_dir} -n multiqc_report_prinseq_filtered.html"
+    conda: "multiqc"
+    shell: "multiqc -c utils/multiqc_config.yaml -f {params.fastqc_dir} -o {params.multiqc_dir} -n multiqc_report_prinseq_filtered.html"
 
-rule bmtagger:
-    input:
-        r1 = os.path.join(config["output_dir"],"prinseq","{sample}_filtered_1.fastq"),
-        r2 = os.path.join(config["output_dir"],"prinseq","{sample}_filtered_2.fastq")
-    output:
-        r1 = os.path.join(config["output_dir"],"bmtagger","{sample}_bmtagged_1.fastq"),
-        r2 = os.path.join(config["output_dir"],"bmtagger","{sample}_bmtagged_2.fastq")
-    params:
-        n = os.path.join(config["output_dir"],"bmtagger","{sample}_bmtagged")
-    conda: "utils/envs/bmtagger_env.yaml"
-    shell:
-        "bmtagger.sh -b {config[bmfilter_ref]} -x {config[srprism_ref]} -q 1 -1 "
-        "{input.r1} -2 {input.r2} -o {params.n} -X"
 
 rule fastqc_bmtagger_filt:
     input:
@@ -154,7 +152,7 @@ rule fastqc_bmtagger_filt:
         r2 = os.path.join(config["output_dir"],"bmtagger","fastqc","{sample}_bmtagged_2_fastqc.html")
     params:
         fastqc_dir = os.path.join(config["output_dir"],"bmtagger","fastqc/")
-    conda: "utils/envs/fastqc_env.yaml"
+    conda: "fastqc"
     shell: "fastqc -o {params.fastqc_dir} {input.r1} {input.r2}"
 
 rule multiqc_bmtagger_filt:
@@ -165,8 +163,8 @@ rule multiqc_bmtagger_filt:
     params:
         fastqc_dir = os.path.join(config["output_dir"],"bmtagger","fastqc/"),
         multiqc_dir = os.path.join(config["output_dir"],"multiqc/")
-    conda: "utils/envs/multiqc_env.yaml"
-    shell: "multiqc -f {params.fastqc_dir} -o {params.multiqc_dir} -n multiqc_report_bmtagger_filtered.html"
+    conda: "multiqc"
+    shell: "multiqc -c utils/multiqc_config.yaml -f {params.fastqc_dir} -o {params.multiqc_dir} -n multiqc_report_bmtagger_filtered.html"
 	
 rule bbmap:
     input:
@@ -183,8 +181,65 @@ rule bbmap:
         m = os.path.join(config["output_dir"],"bbmap","{sample}_human_reads_#.fastq"),
         pre = "{sample}",
         out_dir = os.path.join(config["output_dir"],"bbmap_stats")
-    conda: "utils/envs/bbmap_env.yaml"
+    conda: "bbmap"
     shell:
         "bbmap.sh in={params.i} outu={params.u} outm={params.m} ref={config[bbmap_ref]} nodisk scafstats={params.out_dir}/{params.pre}_scafstats.txt ihist={params.out_dir}/{params.pre}_ihist.txt statsfile={params.out_dir}/{params.pre}_statsfile.txt"
+
+
+
+rule seqkit:
+     input:
+        r1 = expand(os.path.join(config["output_dir"],"bmtagger","{sample}_bmtagged_1.fastq"), sample=SAMPLES),
+        r2 = expand(os.path.join(config["output_dir"],"bmtagger","{sample}_bmtagged_2.fastq"), sample=SAMPLES),
+     output:
+        raw=config["output_dir"]+"/seq_kit_raw.csv",
+        prinseq=config["output_dir"] +"/seq_kit_prinseq.csv",
+        bmtagger=config["output_dir"]+"/seq_kit_bmtagger.csv",
+        complete=config["output_dir"]+"/seq_kit_complete.csv"
+     params:
+        raw=config["input_dir"],
+        prinseq=directory(os.path.join(config["output_dir"],"prinseq")),
+        bmtagger=directory(os.path.join(config["output_dir"],"bmtagger"))
+     conda: "seqkit"
+     shell:
+         "seqkit stats -j {config[num_cpus]} {params.prinseq}/*_[0-9].fastq -o {output.prinseq};"
+         "seqkit stats -j {config[num_cpus]} {params.bmtagger}/*.fastq -o {output.bmtagger};"
+         "seqkit stats -j {config[num_cpus]} {params.raw}/*.fastq.gz -o {output.raw};"
+         "touch {output.complete};"
+
+
+rule host_contamination:
+     input:
+        raw=config["output_dir"]+"/seq_kit_raw.csv",
+        prinseq=config["output_dir"] +"/seq_kit_prinseq.csv",
+        bmtagger=config["output_dir"]+"/seq_kit_bmtagger.csv",
+        complete=config["output_dir"]+"/seq_kit_complete.csv"
+     output:
+         hc=config["output_dir"]+"/qc_seqkit.csv"
+     run:
+        import pandas as pd
+        raw=pd.read_csv(input[0],sep="\s+")
+        prinseq=pd.read_csv(input[1],sep="\s+")
+        bmtagger=pd.read_csv(input[2],sep="\s+")
+
+        raw['Sample']=raw.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split(".",expand=True,).loc[:,0].str.split("_[1|2]$",expand=True,).iloc[:,0]
+        raw['Type']=raw.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split(".",expand=True,).loc[:,0].str.rsplit("_",1,expand=True,).iloc[:,1]
+
+        prinseq['Sample']=prinseq.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split("_filtered",expand=True,).iloc[:,0]
+        prinseq['Type']=prinseq.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split("_filtered_",expand=True,).iloc[:,1].str.split(".fastq",expand=True,).iloc[:,0]
+
+        bmtagger['Sample']=bmtagger.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split("_bmtagged",expand=True,).iloc[:,0].str.split(".fastq",expand=True,).iloc[:,0]
+        bmtagger['Type']=bmtagger.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split("_bmtagged_",expand=True,).iloc[:,1].str.split(".fastq",expand=True,).iloc[:,0]
+
+        raw=raw.set_index(['Sample','Type'])
+        prinseq=prinseq.set_index(['Sample','Type'])
+        bmtagger=bmtagger.set_index(['Sample','Type'])
+        merged=bmtagger.join(prinseq,lsuffix="_bmtagged", rsuffix="_prinseq").join(raw)
+        merged=merged.reset_index()
+        merged.loc[:,('num_seqs','num_seqs_bmtagged','num_seqs_prinseq')] = merged.loc[:,('num_seqs','num_seqs_bmtagged','num_seqs_prinseq')].applymap(lambda src: src.replace(',', '')).astype(float)
+        merged.loc[:,'Host_contamination']=(merged.loc[:,'num_seqs_prinseq']-merged.loc[:,'num_seqs_bmtagged'])
+        merged.loc[:,'Clean_reads']=merged.loc[:,'num_seqs_bmtagged']
+        merged.loc[:,'Low_quality_reads']=merged.loc[:,'num_seqs']-merged.loc[:,'num_seqs_prinseq']
+        merged.loc[:,['Sample','Type','Low_quality_reads','Clean_reads','Host_contamination','num_seqs','num_seqs_prinseq','num_seqs_bmtagged']].to_csv(output[0],index=False)
 
 

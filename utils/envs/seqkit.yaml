@@ -1,0 +1,7 @@
+name: seqkit
+channels:
+  - bioconda/label/cf201901
+  - defaults
+dependencies:
+  - seqkit=0.10.0=1
+prefix: /home/hena.ramay/miniconda3/envs/seqkit
