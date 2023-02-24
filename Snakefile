@@ -19,7 +19,7 @@ forward_read_num = config["forward_read_suffix"].split(".",1)[0]
 reverse_read_num = config["reverse_read_suffix"].split(".",1)[0]
 
 #reverse_read_num = os.path.splitext(config["reverse_read_suffix"])[0]
-print(reverse_read_num)
+#print(reverse_read_num)
 
 
 
