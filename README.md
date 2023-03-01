@@ -86,7 +86,7 @@ ls | grep R1_001.fastq | sed 's/_R1_001.fastq//' > list_files.txt
 ## Description of parameters
 | Parameter | Description | Example/Default |
 | -------------- | --------------- | ------------ |
-| list_files | Full path and name of your sample list. | `"/bulk/IMCbinf/aschick/project/list_files.txt"` |
+| <span style="background-color: #FFFF00">list_files </span> | Full path and name of your sample list. | `"/bulk/IMCbinf/aschick/project/list_files.txt"` |
 | input_dir | Location of input files. | `"output"` |
 | forward_read_suffix | Suffix of forward reads. | `"_1.fastq.gz"` |
 | reverse_read_suffix | Suffix of reverse reads. | `"_2.fastq.gz"` |
