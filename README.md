@@ -5,7 +5,9 @@ Bioinformatics pipeline for performing QC on shotgun metagenomic data.
 ## Overview
 
 Tested with:
+
 conda >= 4.11.0 
+
 snakemake version >= 7.12.1 
 
 Input: 
@@ -63,7 +65,7 @@ NOTE: to disable all steps besides fastqc/multiqc, set the parameter `qc_only` t
 To use this pipeline, navigate to your project directory and clone this repository into that directory using the following command:
 
 ```
-git clone https://github.com/SycuroLab/metqc.git metqc
+git clone https://github.com/SycuroLab/metqc.git
 ```
 
 Note: you need to have **conda** and **snakemake** installed in order to run this. See instructions below. 
@@ -83,10 +85,10 @@ If there are many samples, it may be convenient to generate the list of files us
 ls | grep R1_001.fastq | sed 's/_R1_001.fastq//' > list_files.txt
 ```
 
-## Description of parameters
+## Description of parameters 
 | Parameter | Description | Example/Default |
 | -------------- | --------------- | ------------ |
-| <span style="background-color: #FFFF00">list_files </span> | Full path and name of your sample list. | `"/bulk/IMCbinf/aschick/project/list_files.txt"` |
+| list_files | Full path and name of your sample list. | `"/bulk/IMCbinf/aschick/project/list_files.txt"` |
 | input_dir | Location of input files. | `"output"` |
 | forward_read_suffix | Suffix of forward reads. | `"_1.fastq.gz"` |
 | reverse_read_suffix | Suffix of reverse reads. | `"_2.fastq.gz"` |
@@ -115,6 +117,15 @@ ls | grep R1_001.fastq | sed 's/_R1_001.fastq//' > list_files.txt
 | bbmap_ref | Name of reference fasta for bbmap to align reads | `"/home/refs.hs37.fa"` |
 
 
+## Parameters you must double check!!!
+1) list_files 
+2) input_dir
+3) forward_read_suffix
+4) reverse_read_suffix
+5) fwd_adapter (make sure these are correct for your run and look at multiqc to check if they were removed)
+6) rev_adapter (make sure these are correct for your run and look at multiqc to check if they were removed)
+
+
 ## Running the pipeline on ARC (SLURM cluster)
 
 Test the pipeline by running `snakemake -np`. This command prints out the commands to be run without actually running them. 
@@ -122,7 +133,7 @@ Test the pipeline by running `snakemake -np`. This command prints out the comman
 To run the pipeline on the ARC compute cluster, enter the following command from the project directory:
 
 ```
-sbatch < metqc_sbatch.sh
+sbatch  metqc_sbatch.sh
 ```
 
 The above command submits jobs to ARC, one for each sample and step of the metqc pipeline.
