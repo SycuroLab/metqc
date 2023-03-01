@@ -4,6 +4,10 @@ Bioinformatics pipeline for performing QC on shotgun metagenomic data.
 
 ## Overview
 
+Tested with:
+conda >= 4.11.0 
+snakemake version >= 7.12.1 
+
 Input: 
 
 * Raw paired-end fastq files from shotgun metagenome sequencing. 
@@ -17,7 +21,7 @@ Output:
 
 Example workflow. Note that the `cutadapt` and `bbmap` steps are optional. See the description of parameters section for more information.
 
-<img src="utils/metqc_rulegraph.png" width="450">
+<img src="utils/rulegraph.png" width="450">
 
 ## Steps
 
@@ -51,6 +55,9 @@ NOTE: to disable all steps besides fastqc/multiqc, set the parameter `qc_only` t
 
 6) Map reads to human reference genome using BBMap. This step is optional; to disable set the parameter `run_bbmap = FALSE` in the config file. If using,  specify location of reference file in config file (need to specify a `.fasta` file). This step generates two fastq files for each sample: one of reads that mapped to the human genome and one reads that did not map to the human genome. Files are output to a directory called `output/bbmap/` with the suffix 'bbmapped' and 'human_reads'. 
 
+7) seqkit is used to calculate the number of reads in fastq files produced after each step of the pipeline i.e raw, prinseq and bmtagger. It does not do anything for bbmap resutls at the moment. Using seqkit and rule host_contamination a qc_seqkit.csv file is generated which for each sample contains number of clean reads, reads removed during quality control and host contamination reads.
+
+
 ## Installation
 
 To use this pipeline, navigate to your project directory and clone this repository into that directory using the following command:
@@ -60,6 +67,7 @@ git clone https://github.com/SycuroLab/metqc.git metqc
 ```
 
 Note: you need to have **conda** and **snakemake** installed in order to run this. See instructions below. 
+
 
 ## Config file
 
@@ -78,10 +86,10 @@ ls | grep R1_001.fastq | sed 's/_R1_001.fastq//' > list_files.txt
 ## Description of parameters
 | Parameter | Description | Example/Default |
 | -------------- | --------------- | ------------ |
-| list_files | Full path and name of your sample list. | `"/home/aschick/project/list_files.txt"` |
-| path | Location of input files. | `"/home/aschick/project/data/filtered/"` |
-| for | Suffix of forward reads. | `"_R1_001"` |
-| rev | Suffix of reverse reads. | `"_R2_001"` |
+| list_files | Full path and name of your sample list. | `"/bulk/IMCbinf/aschick/project/list_files.txt"` |
+| input_dir | Location of input files. | `"output"` |
+| forward_read_suffix | Suffix of forward reads. | `"_1.fastq.gz"` |
+| reverse_read_suffix | Suffix of reverse reads. | `"_2.fastq.gz"` |
 | qc_only | Set to TRUE to only run fastqc and multiqc. | `FALSE` |
 
 ### Optional parameters
@@ -101,8 +109,8 @@ ls | grep R1_001.fastq | sed 's/_R1_001.fastq//' > list_files.txt
 | trim_qual_rule | Rule to use to compare quality score to calculated value. Allowed options are lt (less than), gt (greater than, default) and et (equal to) | `"lt"` | 
 | trim_qual_type | Type of quality score calculation to use, allowed options are: min, mean (default), max, sum | `"mean"` |
 | run_bmtagger | Whether or not to run bmtagger | `TRUE` |
-| bmfilter_ref | Index for bmfilter (part of bmtagger), should be a bitmask file, see [link](https://www.westgrid.ca/support/software/bmtagger) for more info | `"/home/refs/hg19/hg19_rRNA_reference.bitmask"` |
-| srprism_ref | Index for srprism (part of bmtagger), should be a reference.srprism prefix, see above link for more info | `"/home/refs/hg19/hg19_rRNA_reference.srprism"` |
+| bmfilter_ref | Index for bmfilter (part of bmtagger), should be a bitmask file, see [link](https://www.westgrid.ca/support/software/bmtagger) for more info | `"hg19_rRNA_mito_Hsapiens_rna_reference.bitmask"` |
+| srprism_ref | Index for srprism (part of bmtagger), should be a reference.srprism prefix, see above link for more info | `"hg19_rRNA_mito_Hsapiens_rna_reference.srprism"` |
 | run_bbmap | Whether or not to run bbmap | `FALSE` |
 | bbmap_ref | Name of reference fasta for bbmap to align reads | `"/home/refs.hs37.fa"` |
 
@@ -128,17 +136,6 @@ The General Guidelines and Policies can be found here:
 https://rcs.ucalgary.ca/index.php/General_Cluster_Guidelines_and_Policies
 
 
-## Running the pipeline on Synergy (LSF cluster)
-
-Test the pipeline by running `snakemake -np`. This command prints out the commands to be run without actually running them. 
-
-To run the pipeline on the Synergy compute cluster, enter the following command from the project directory:
-
-```
-snakemake --cluster-config cluster.json --cluster 'bsub -n {cluster.n} -R {cluster.resources} -W {cluster.walllim} -We {cluster.time} -M {cluster.maxmem} -oo {cluster.output} -e {cluster.error}' --jobs 500 --use-conda
-```
-The above command submits jobs to Synergy, one for each sample and step of the QC pipeline. Note: the file `cluster.json` contains the parameters for the LSF job submission system that Synergy uses. In most cases, this file should not be modified.
-
 ## Results and log files
 
 Snakemake will create a directory for the results of the pipeline as well as a directory for log files. Log files of each step of the pipeline will be written to the `logs` directory.
@@ -154,5 +151,8 @@ conda install -c bioconda -c conda-forge snakemake
 ```
 See the snakemake installation [instructions](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html) for further details.
 
+## Known issues
 
+1) If you are processing very deep sequenced fastq files, you might run out of memory and time on the cluster. Go to cluster.json file and modify time or mem options. Remember that if memory requirements exceed the nodes max, you will have to chose a different node. Please ask of help from bioinformaticians if you can not figure it out. 
+2) Once in a while fastqc will just crash on a sample, in that case, please rerun the pipeline. 
 
