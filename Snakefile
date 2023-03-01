@@ -43,6 +43,7 @@ def all_input_reads(qc):
 rule all:
     input:
         os.path.join(config["output_dir"],"multiqc","multiqc_report_raw.html"),
+	## comment out the line below if host_contamination rule fails.
         config["output_dir"]+"/qc_seqkit.csv",
         os.path.join(config["output_dir"],"multiqc","multiqc_report_raw.html") if config["qc_only"] else os.path.join(config["output_dir"],"multiqc","multiqc_report_prinseq_filtered.html"),
         os.path.join(config["output_dir"],"multiqc","multiqc_report_bmtagger_filtered.html"), all_input_reads
