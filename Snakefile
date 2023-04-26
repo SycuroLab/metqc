@@ -129,7 +129,7 @@ rule fastqc_prinseq_filt:
         r2 = os.path.join(config["output_dir"],"prinseq","fastqc","{sample}_filtered_2_fastqc.html")
     params:
         fastqc_dir = os.path.join(config["output_dir"],"prinseq","fastqc/")
-    conda: "fastqc_env.yaml"
+    conda: "utils/envs/fastqc_env.yaml"
     shell: "fastqc -o {params.fastqc_dir} {input.r1} {input.r2}"
 
 rule multiqc_prinseq_filt:
@@ -153,7 +153,7 @@ rule fastqc_bmtagger_filt:
         r2 = os.path.join(config["output_dir"],"bmtagger","fastqc","{sample}_bmtagged_2_fastqc.html")
     params:
         fastqc_dir = os.path.join(config["output_dir"],"bmtagger","fastqc/")
-    conda: "fastqc_env.yaml"
+    conda: "utils/envs/fastqc_env.yaml"
     shell: "fastqc -o {params.fastqc_dir} {input.r1} {input.r2}"
 
 rule multiqc_bmtagger_filt:
