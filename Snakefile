@@ -19,7 +19,7 @@ forward_read_num = config["forward_read_suffix"].split(".",1)[0]
 reverse_read_num = config["reverse_read_suffix"].split(".",1)[0]
 
 #reverse_read_num = os.path.splitext(config["reverse_read_suffix"])[0]
-print(reverse_read_num)
+#print(reverse_read_num)
 
 
 
@@ -46,7 +46,17 @@ rule all:
 	## comment out the line below if host_contamination rule fails.
         config["output_dir"]+"/qc_seqkit.csv",
         os.path.join(config["output_dir"],"multiqc","multiqc_report_raw.html") if config["qc_only"] else os.path.join(config["output_dir"],"multiqc","multiqc_report_prinseq_filtered.html"),
-        os.path.join(config["output_dir"],"multiqc","multiqc_report_bmtagger_filtered.html"), all_input_reads
+        os.path.join(config["output_dir"],"multiqc","multiqc_report_bmtagger_filtered.html"), 
+        os.path.join(config["output_dir"],"multiqc","multiqc_report_bmtagger_filtered.html"),
+        os.path.join(config["output_dir"],"bbmerge_percent_overlap","merged_percent_overlap_table.csv"),
+        os.path.join(config["output_dir"],"bbmerge_percent_overlap","merged_percent_overlap_stats.csv"),
+        os.path.join(config["output_dir"],"bbmerge_percent_overlap","percent_overlap_read_counts_persample.csv"),
+        os.path.join(config["output_dir"],"bbmerge_percent_overlap","percent_overlap_plot.png"),
+        os.path.join(config["output_dir"],"bbmap_insert_size","merged_insert_size_table.csv"),
+        os.path.join(config["output_dir"],"bbmap_insert_size","merged_insert_size_stats.csv"),
+        os.path.join(config["output_dir"],"bbmap_insert_size","mapped_read_counts_persample.csv"),
+        os.path.join(config["output_dir"],"bbmap_insert_size","insert_size_plot.png"),
+        all_input_reads
 
 rule fastqc_raw:
     input:
@@ -187,6 +197,56 @@ rule bbmap:
         "bbmap.sh in={params.i} outu={params.u} outm={params.m} ref={config[bbmap_ref]} nodisk scafstats={params.out_dir}/{params.pre}_scafstats.txt ihist={params.out_dir}/{params.pre}_ihist.txt statsfile={params.out_dir}/{params.pre}_statsfile.txt"
 
 
+rule bbmap_insert_size:
+    input:
+        r1 = os.path.join(config["output_dir"],"prinseq","{sample}_filtered_1.fastq"),
+        r2 = os.path.join(config["output_dir"],"prinseq","{sample}_filtered_2.fastq")
+    output:
+        ihist=os.path.join(config["output_dir"],"bbmap_insert_size","insert_size","{sample}_ihist.csv")
+    params:
+        path=config["bbmap_ref_ind"],
+        threads=config["num_cpus"]
+    conda: "utils/envs/bbmap_env.yaml"
+    shell:
+        "bbmap.sh build=1 pairedonly=t in={input.r1} in2={input.r2} interleaved=f minid=0.8 threads={params.threads} ambiguous=all ihist={output.ihist} path={params.path}"
+
+
+rule bbmap_merge_ihists:
+     input:
+       expand(os.path.join(config["output_dir"],"bbmap_insert_size","insert_size","{sample}_ihist.csv"), sample=SAMPLES)
+     output:
+       o1=os.path.join(config["output_dir"],"bbmap_insert_size","merged_insert_size_table.csv"),
+       o2=os.path.join(config["output_dir"],"bbmap_insert_size","merged_insert_size_stats.csv"),
+       o3=os.path.join(config["output_dir"],"bbmap_insert_size","mapped_read_counts_persample.csv"),
+       o4=os.path.join(config["output_dir"],"bbmap_insert_size","insert_size_plot.png"),
+       o5=os.path.join(config["output_dir"],"bbmap_insert_size","meansofstats_insert_size.csv")
+     conda: "utils/envs/python3_8.yaml"
+     script: "utils/scripts/merge_ihist.py"
+
+rule bbmerge_percent_overlap:
+    input:
+        r1 = os.path.join(config["output_dir"],"prinseq","{sample}_filtered_1.fastq"),
+        r2 = os.path.join(config["output_dir"],"prinseq","{sample}_filtered_2.fastq")
+    output:
+        ihist=os.path.join(config["output_dir"],"bbmerge_percent_overlap","percent_overlap","{sample}_ihist.csv")
+    params:
+        path=config["bbmap_ref_ind"],
+        threads=config["num_cpus"]
+    conda: "utils/envs/bbmap_env.yaml"
+    shell:
+       " bbmerge.sh in={input.r1} in2={input.r2} ihist={output.ihist}"
+
+rule bbmerge_ihists:
+     input:
+       expand(os.path.join(config["output_dir"],"bbmerge_percent_overlap","percent_overlap","{sample}_ihist.csv"), sample=SAMPLES)
+     output:
+       o1=os.path.join(config["output_dir"],"bbmerge_percent_overlap","merged_percent_overlap_table.csv"),
+       o2=os.path.join(config["output_dir"],"bbmerge_percent_overlap","merged_percent_overlap_stats.csv"),
+       o3=os.path.join(config["output_dir"],"bbmerge_percent_overlap","percent_overlap_read_counts_persample.csv"),
+       o4=os.path.join(config["output_dir"],"bbmerge_percent_overlap","percent_overlap_plot.png"),
+       o5=os.path.join(config["output_dir"],"bbmerge_percent_overlap","meansofstats_percent_overlap.csv")
+     conda: "utils/envs/python3_8.yaml"
+     script: "utils/scripts/merge_ihist.py"
 
 rule seqkit:
      input:
@@ -215,32 +275,10 @@ rule host_contamination:
         prinseq=config["output_dir"] +"/seq_kit_prinseq.csv",
         bmtagger=config["output_dir"]+"/seq_kit_bmtagger.csv",
         complete=config["output_dir"]+"/seq_kit_complete.csv"
+     params:
+        r1=forward_read_num, #config["reverse_read_suffix"],
+        r2=reverse_read_num #config["forward_read_suffix"]
+     conda: "utils/envs/python3_8.yaml"
      output:
          hc=config["output_dir"]+"/qc_seqkit.csv"
-     run:
-        import pandas as pd
-        raw=pd.read_csv(input[0],sep="\s+")
-        prinseq=pd.read_csv(input[1],sep="\s+")
-        bmtagger=pd.read_csv(input[2],sep="\s+")
-
-        raw['Sample']=raw.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split(".",expand=True,).loc[:,0].str.split("_[1|2]$",expand=True,).iloc[:,0]
-        raw['Type']=raw.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split(".",expand=True,).loc[:,0].str.rsplit("_",1,expand=True,).iloc[:,1]
-
-        prinseq['Sample']=prinseq.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split("_filtered",expand=True,).iloc[:,0]
-        prinseq['Type']=prinseq.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split("_filtered_",expand=True,).iloc[:,1].str.split(".fastq",expand=True,).iloc[:,0]
-
-        bmtagger['Sample']=bmtagger.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split("_bmtagged",expand=True,).iloc[:,0].str.split(".fastq",expand=True,).iloc[:,0]
-        bmtagger['Type']=bmtagger.iloc[:,0].apply(lambda x: os.path.splitext(os.path.basename(x))[0]).str.split("_bmtagged_",expand=True,).iloc[:,1].str.split(".fastq",expand=True,).iloc[:,0]
-
-        raw=raw.set_index(['Sample','Type'])
-        prinseq=prinseq.set_index(['Sample','Type'])
-        bmtagger=bmtagger.set_index(['Sample','Type'])
-        merged=bmtagger.join(prinseq,lsuffix="_bmtagged", rsuffix="_prinseq").join(raw)
-        merged=merged.reset_index()
-        merged.loc[:,('num_seqs','num_seqs_bmtagged','num_seqs_prinseq')] = merged.loc[:,('num_seqs','num_seqs_bmtagged','num_seqs_prinseq')].applymap(lambda src: src.replace(',', '')).astype(float)
-        merged.loc[:,'Host_contamination']=(merged.loc[:,'num_seqs_prinseq']-merged.loc[:,'num_seqs_bmtagged'])
-        merged.loc[:,'Clean_reads']=merged.loc[:,'num_seqs_bmtagged']
-        merged.loc[:,'Low_quality_reads']=merged.loc[:,'num_seqs']-merged.loc[:,'num_seqs_prinseq']
-        merged.loc[:,['Sample','Type','Low_quality_reads','Clean_reads','Host_contamination','num_seqs','num_seqs_prinseq','num_seqs_bmtagged']].to_csv(output[0],index=False)
-
-
+     script:"utils/scripts/host_contamination.py"

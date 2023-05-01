@@ -1,0 +1,11 @@
+name: python3_8
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - matplotlib=3.7.1
+  - matplotlib-base=3.7.1
+  - numpy=1.23.2
+  - pandas=1.4.3
+prefix: /home/hena.ramay/miniconda3/envs/python3_8

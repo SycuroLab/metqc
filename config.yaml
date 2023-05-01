@@ -2,14 +2,16 @@
 # * Parameters for metqc pipeline *
 # *********************************
 
+
 # List of files
-list_files: "/bulk/IMCshared_bulk/sycuro_shared_projects/IMPACTT_benchmarking/IMPACTT_sample_handling/shotgun/2022_09_09/analysis/list_files.txt"
+list_files: "utils/list_files.txt"
 
 # Input directory Path to raw sequences
-input_dir: "/bulk/IMCshared_bulk/sycuro_shared_projects/IMPACTT_benchmarking/IMPACTT_sample_handling/shotgun/2022_09_09/data/"
+input_dir: "/bulk/IMCshared_bulk/hramay/pipeline_test_files/"
 
 # Output directory path for output files.
 output_dir: "output"
+
 
 # Suffix for forward reads.
 forward_read_suffix: "_1.fastq.gz"
@@ -67,4 +69,5 @@ run_bbmap: FALSE
 
 # Path and name of reference fasta for bbmap
 bbmap_ref: "/home/aschick/refs/hs37.fa"
+bbmap_ref_ind: "/bulk/IMCshared_bulk/shared/dbs/bbmapDB/bbmap_GRCh38.p14/"
 

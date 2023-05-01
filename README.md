@@ -59,6 +59,8 @@ NOTE: to disable all steps besides fastqc/multiqc, set the parameter `qc_only` t
 
 7) seqkit is used to calculate the number of reads in fastq files produced after each step of the pipeline i.e raw, prinseq and bmtagger. It does not do anything for bbmap resutls at the moment. Using seqkit and rule host_contamination a qc_seqkit.csv file is generated which for each sample contains number of clean reads, reads removed during quality control and host contamination reads.
 
+8) Use bbmap and bbmerge to calculate insert size and read overlap percentage. 
+
 
 ## Installation
 
@@ -115,7 +117,7 @@ ls | grep R1_001.fastq | sed 's/_R1_001.fastq//' > list_files.txt
 | srprism_ref | Index for srprism (part of bmtagger), should be a reference.srprism prefix, see above link for more info | `"hg19_rRNA_mito_Hsapiens_rna_reference.srprism"` |
 | run_bbmap | Whether or not to run bbmap | `FALSE` |
 | bbmap_ref | Name of reference fasta for bbmap to align reads | `"/home/refs.hs37.fa"` |
-
+| bbmap_ref_index | This is the host reference to which the reads are mapped to calculate insert size
 
 ## Parameters you must double check!!!
 1) list_files 
@@ -124,7 +126,7 @@ ls | grep R1_001.fastq | sed 's/_R1_001.fastq//' > list_files.txt
 4) reverse_read_suffix
 5) fwd_adapter (make sure these are correct for your run and look at multiqc to check if they were removed)
 6) rev_adapter (make sure these are correct for your run and look at multiqc to check if they were removed)
-
+7) bmfilter_ref and bbmap_ref_index ( make sure the references matches the host i.e human or mouse)
 
 ## Running the pipeline on ARC (SLURM cluster)
 
@@ -166,4 +168,3 @@ See the snakemake installation [instructions](https://snakemake.readthedocs.io/e
 
 1) If you are processing very deep sequenced fastq files, you might run out of memory and time on the cluster. Go to cluster.json file and modify time or mem options. Remember that if memory requirements exceed the nodes max, you will have to chose a different node. Please ask of help from bioinformaticians if you can not figure it out. 
 2) Once in a while fastqc will just crash on a sample, in that case, please rerun the pipeline. 
-
